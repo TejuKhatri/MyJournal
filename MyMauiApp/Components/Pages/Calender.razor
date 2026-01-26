@@ -24,7 +24,7 @@
         --radius: 16px;
     }
 
-   
+    /* Calendar styling */
     .calendar-container {
         max-width: 980px;
         margin: 0 auto;
@@ -32,154 +32,6 @@
         background: transparent;
         color: var(--text);
     }
-
-    .page-header {
-        margin-bottom: 14px;
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-
-    .page-title {
-        font-size: 22px;
-        font-weight: 900;
-        margin: 0;
-        color: var(--text);
-    }
-
-    .page-subtitle {
-        margin: 4px 0 0 0;
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .header-actions {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .chip {
-        padding: 8px 12px;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: var(--card);
-        box-shadow: var(--shadow);
-        font-size: 12px;
-        font-weight: 800;
-        color: var(--text);
-    }
-
-    /* Stats bar */
-    .stats-bar {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin-bottom: 12px;
-    }
-
-    .stat-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 14px;
-        box-shadow: var(--shadow);
-        position: relative;
-        overflow: hidden;
-    }
-
-        .stat-card::before {
-            content: "";
-            position: absolute;
-            inset: 0 0 auto 0;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            opacity: .92;
-        }
-
-    .stat-label {
-        font-size: 12px;
-        color: var(--muted);
-        font-weight: 800;
-        margin-bottom: 6px;
-    }
-
-    .stat-value {
-        font-size: 22px;
-        font-weight: 950;
-        color: var(--primary);
-        line-height: 1;
-    }
-
-    /* Main card */
-    .calendar-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 16px;
-        box-shadow: var(--shadow);
-    }
-
-    .calendar-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid rgba(0,0,0,0.08);
-        margin-bottom: 12px;
-        flex-wrap: wrap;
-    }
-
-    html.theme-dark .calendar-nav {
-        border-bottom-color: rgba(255,255,255,0.10);
-    }
-
-    .calendar-nav h2 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 950;
-        color: var(--text);
-        letter-spacing: .2px;
-    }
-
-    .btn-nav {
-        padding: 9px 12px;
-        background: linear-gradient(180deg, var(--primary2), var(--primary));
-        color: white;
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 12px;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 900;
-        transition: transform .15s ease, filter .15s ease;
-    }
-
-        .btn-nav:hover {
-            filter: brightness(1.03);
-            transform: translateY(-1px);
-        }
-
-    .btn-today {
-        padding: 9px 12px;
-        background: rgba(249,115,22,0.12);
-        color: var(--text);
-        border: 1px solid rgba(249,115,22,0.35);
-        border-radius: 12px;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 900;
-        transition: transform .15s ease, background .15s ease;
-    }
-
-        .btn-today:hover {
-            background: rgba(249,115,22,0.18);
-            transform: translateY(-1px);
-        }
 
     /* Calendar grid */
     .calendar-grid {
@@ -216,37 +68,22 @@
         color: var(--text);
     }
 
-    html.theme-dark .calendar-day {
-        border-color: rgba(255,255,255,0.12);
-        background: rgba(255,255,255,0.04);
-    }
+        .calendar-day:hover {
+            border-color: rgba(249,115,22,0.55);
+            box-shadow: 0 12px 22px rgba(249,115,22,0.15);
+            transform: translateY(-2px);
+        }
 
-    .calendar-day:hover {
-        border-color: rgba(249,115,22,0.55);
-        box-shadow: 0 12px 22px rgba(249,115,22,0.15);
-        transform: translateY(-2px);
-    }
+        .calendar-day.today {
+            border-color: rgba(249,115,22,0.70);
+            background: rgba(249,115,22,0.10);
+            font-weight: 900;
+        }
 
-    .calendar-day.other-month {
-        opacity: .55;
-        border-color: rgba(0,0,0,0.06);
-    }
-
-    html.theme-dark .calendar-day.other-month {
-        border-color: rgba(255,255,255,0.08);
-        opacity: .45;
-    }
-
-    .calendar-day.today {
-        border-color: rgba(249,115,22,0.70);
-        background: rgba(249,115,22,0.10);
-        font-weight: 900;
-    }
-
-    .calendar-day.has-entry {
-        background: rgba(253,186,116,0.25);
-        border-color: rgba(249,115,22,0.45);
-    }
+        .calendar-day.has-entry {
+            background: rgba(253,186,116,0.25);
+            border-color: rgba(249,115,22,0.45);
+        }
 
     .day-number {
         font-size: 15px;
@@ -254,129 +91,12 @@
         margin-bottom: 4px;
         color: var(--text);
     }
-
-    .entry-indicator {
-        width: 8px;
-        height: 8px;
-        background: var(--primary);
-        border-radius: 50%;
-        margin-top: 4px;
-        box-shadow: 0 0 0 3px rgba(249,115,22,0.18);
-    }
-
-    .entry-preview {
-        position: absolute;
-        bottom: 6px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 10px;
-        color: var(--muted);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 92%;
-        font-weight: 800;
-    }
-
-    /* Selected date panel */
-    .selected-date-info {
-        margin-top: 14px;
-        padding: 14px;
-        background: rgba(249,115,22,0.10);
-        border-radius: var(--radius);
-        border: 1px solid rgba(249,115,22,0.25);
-        border-left: 6px solid rgba(249,115,22,0.70);
-        color: var(--text);
-    }
-
-        .selected-date-info h3 {
-            margin: 0 0 10px 0;
-            color: var(--text);
-            font-size: 15px;
-            font-weight: 900;
-        }
-
-    .entry-summary {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 8px;
-    }
-
-    .entry-detail {
-        font-size: 13px;
-        color: var(--text);
-        background: rgba(255,255,255,0.70);
-        border: 1px solid var(--border);
-        padding: 8px 10px;
-        border-radius: 999px;
-        font-weight: 800;
-    }
-
-    html.theme-dark .entry-detail {
-        background: rgba(255,255,255,0.06);
-        border-color: rgba(255,255,255,0.12);
-    }
-
-    .entry-detail strong {
-        color: var(--muted);
-        margin-right: 6px;
-        font-weight: 900;
-    }
-
-    .btn-view-entry {
-        margin-top: 12px;
-        padding: 10px 12px;
-        background: linear-gradient(180deg, var(--primary2), var(--primary));
-        color: white;
-        border: 1px solid rgba(255,255,255,0.18);
-        border-radius: 12px;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 900;
-        transition: transform .15s ease, filter .15s ease;
-    }
-
-        .btn-view-entry:hover {
-            filter: brightness(1.05);
-            transform: translateY(-1px);
-        }
-
-    .btn-new-entry {
-        margin-top: 12px;
-        padding: 10px 12px;
-        background: rgba(34, 197, 94, 0.14);
-        color: #166534;
-        border: 1px solid rgba(34, 197, 94, 0.35);
-        border-radius: 12px;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 900;
-        transition: transform .15s ease, background .15s ease;
-    }
-
-        .btn-new-entry:hover {
-            background: rgba(34, 197, 94, 0.20);
-            transform: translateY(-1px);
-        }
-
-    .loading {
-        text-align: center;
-        padding: 30px;
-        color: var(--muted);
-        font-weight: 800;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-    }
 </style>
-
 
 <div class="calendar-container">
     <div class="page-header">
         <div>
-            <h1 class="page-title"> Timeline</h1>
+            <h1 class="page-title">Timeline</h1>
             <p class="page-subtitle"></p>
         </div>
 
@@ -433,10 +153,8 @@
                 {
                     var hasEntry = entryDates.Contains(date.Date);
                     var isToday = date.Date == DateTime.Today;
-                    var isCurrentMonth = date.Month == currentMonth.Month;
 
-                    <div class="calendar-day @(hasEntry ? "has-entry" : "") @(isToday ? "today" : "") @(isCurrentMonth ? "" : "other-month")"
-                         @onclick="() => SelectDate(date)">
+                    <div class="calendar-day @(hasEntry ? "has-entry" : "") @(isToday ? "today" : "")">
                         <span class="day-number">@date.Day</span>
                         @if (hasEntry)
                         {
@@ -517,7 +235,6 @@
             entriesThisMonth = entries.Count;
             totalEntries = entryDates.Count;
 
-            // ✅ FIX: Use DI DatabaseService (no new DatabaseService())
             var db = await DatabaseService.GetConnectionAsync();
             var allEntries = await db.Table<JournalEntry>()
                 .OrderBy(e => e.EntryDate)
@@ -551,8 +268,15 @@
         var startDate = firstDay.AddDays(-(dayOfWeek == 0 ? 6 : dayOfWeek - 1));
 
         var dates = new List<DateTime>(42);
+        var lastDay = firstDay.AddMonths(1).AddDays(-1);
+
+        // Only generate dates for the current month
         for (int i = 0; i < 42; i++)
-            dates.Add(startDate.AddDays(i));
+        {
+            var currentDate = startDate.AddDays(i);
+            if (currentDate.Month != currentMonth.Month) break;
+            dates.Add(currentDate);
+        }
 
         return dates;
     }

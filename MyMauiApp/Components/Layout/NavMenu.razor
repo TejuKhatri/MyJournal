@@ -52,13 +52,13 @@
     .top-title {
         font-size: 30px;
         font-weight: 950;
-        color: var(--text);
+        color: var(--primary); /* FluentMind title color set to orange */
     }
 
     .top-welcome {
         font-size: 13px;
         font-weight: 800;
-        color: var(--muted);
+        color: var(--primary); /* Welcome text color set to orange */
         font-style: italic;
         font-family: "Georgia", "Times New Roman", cursive;
     }
@@ -135,7 +135,7 @@
     .brand-title {
         font-size: 14px;
         font-weight: 950;
-        color: var(--text);
+        color: var(--primary); /* FluentMind sidebar title color set to orange */
     }
 
     .nav-links {
@@ -216,7 +216,6 @@
         <div class="nav-shell">
             <div class="nav-top">
                 <div class="brand">
-
                     <div class="brand-title">FluentMind</div>
                 </div>
             </div>
@@ -229,8 +228,6 @@
                 <NavLink class="nav-item" href="/list">All Entries</NavLink>
                 <NavLink class="nav-item" href="/export">Export</NavLink>
                 <NavLink class="nav-item" href="/settings">Settings</NavLink>
-               
-             
             </div>
 
             <div class="nav-bottom">
@@ -246,19 +243,6 @@
 
         <!-- ✅ RIGHT SIDE (TOP BAR + BODY) -->
         <div class="main-area">
-
-            <!-- TOP HORIZONTAL NAV -->
-            <div class="topbar">
-                <div class="topbar-inner">
-                    <div class="topbar-left">
-                        <div class="top-title">Dashboard</div>
-                        <div class="top-welcome">Welcome to my Journal </div>
-                    </div>
-
-                   
-                </div>
-            </div>
-
             <!-- IMPORTANT: this is just a wrapper.
                  Your pages still render in MainLayout with @Body. -->
             <div class="content-wrap"></div>
