@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
 
 <style>
     .app-shell {
@@ -23,35 +24,121 @@
     .app-main {
         min-height: 100vh;
         overflow: auto;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
     }
+
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 998;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
+
+    .topbar-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 50px 66px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .top-welcome {
+        font-size: 44px;
+        font-weight: 1500;
+        color: var(--text);
+        font-family: "Georgia", "Times New Roman", cursive;
+        white-space: nowrap;
+        line-height: 1.1;
+    }
+
+    .top-right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .top-date {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        white-space: nowrap;
+    }
+
+    .logout-btn {
+        background: transparent;
+        border: 1px solid var(--border);
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--text);
+        transition: all 0.2s ease;
+    }
+
+        .logout-btn:hover {
+            background: var(--bg);
+        }
 
     .app-content {
         padding: 16px;
         max-width: 1200px;
         margin: 0 auto;
-    }
-
-    /* ✅ Dark-mode polish (uses your index.html class: theme-dark) */
-    html.theme-dark .app-shell {
-        background: var(--bg);
-        color: var(--text);
-    }
-
-    html.theme-dark .app-sidebar {
-        border-right-color: var(--border);
-        background: var(--nav-bg);
-        box-shadow: var(--shadow);
+        width: 100%;
     }
 </style>
 
 <div class="app-shell">
+
+    <!-- LEFT SIDEBAR -->
     <aside class="app-sidebar">
         <NavMenu />
     </aside>
 
+    <!-- RIGHT SIDE -->
     <main class="app-main">
+
+        <!-- TOP NAV -->
+        <div class="topbar">
+            <div class="topbar-inner">
+
+                <!-- LEFT -->
+                <div class="top-welcome">
+                    Welcome to my Journal 
+                </div>
+
+                <!-- RIGHT -->
+                <div class="top-right">
+                    <div class="top-date">
+                        @DateTime.Now.ToString("dddd, MMMM dd, yyyy")
+                    </div>
+
+                    <button class="logout-btn" @onclick="Logout">
+                        Logout
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PAGE CONTENT -->
         <div class="app-content">
             @Body
         </div>
+
     </main>
 </div>
+
+@code {
+    void Logout()
+    {
+        // Optional: clear session / local storage here
+        Navigation.NavigateTo("/splash", forceLoad: true);
+    }
+}

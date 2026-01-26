@@ -568,7 +568,7 @@
             <h1 class="page-title"> Journal Entries</h1>
             <p class="subtext"></p>
         </div>
-        <button class="btn-new" @onclick="CreateNewEntry">✍️ New Entry</button>
+        <button class="btn-new" @onclick="CreateNewEntry"> New Entry</button>
     </div>
 
     <!-- Search and Filter Bar -->
@@ -662,7 +662,7 @@
                         </div>
 
                         <div class="entry-actions" @onclick:stopPropagation="true">
-                            <button class="btn-icon" @onclick="() => EditEntry(entry.Id)" title="Edit"></button>
+                            <button class="btn-icon" @onclick="() => EditEntry(entry.Id)" title="Edit"> Edit</button>
                             <button class="btn-icon" @onclick="() => DeleteEntry(entry.Id)" title="Delete">🗑️</button>
                         </div>
                     </div>

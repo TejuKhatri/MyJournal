@@ -6,9 +6,97 @@
 
 @inject DatabaseService DatabaseService
 @inject AppLockState LockState
+@inject NavigationManager Navigation
 
 <style>
-    /* ✅ Uses global theme variables from app.css */
+    /* ===== SHELL (LEFT + RIGHT) ===== */
+    .app-shell {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    .main-area {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* ===== TOP BAR ===== */
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 998;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
+
+    .topbar-inner {
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .topbar-left {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        min-width: 220px;
+    }
+
+    .top-title {
+        font-size: 30px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .top-welcome {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--muted);
+        font-style: italic;
+        font-family: "Georgia", "Times New Roman", cursive;
+    }
+
+    .top-links {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    a.top-link {
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 900;
+        color: var(--text);
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(249,115,22,.18);
+        background: rgba(249,115,22,.06);
+        transition: .15s ease;
+        white-space: nowrap;
+    }
+
+        a.top-link:hover {
+            background: rgba(249,115,22,.12);
+            border-color: rgba(249,115,22,.28);
+            transform: translateY(-1px);
+        }
+
+        a.top-link.active,
+        a.top-link[aria-current="page"] {
+            background: rgba(249,115,22,.18);
+            border-color: rgba(249,115,22,.35);
+        }
+
+    /* ===== LEFT SIDEBAR ===== */
     .nav-shell {
         width: 240px;
         height: 100vh;
@@ -18,6 +106,8 @@
         border-right: 1px solid var(--border);
         box-shadow: var(--shadow);
         color: var(--text);
+        position: sticky;
+        top: 0;
     }
 
     .nav-top {
@@ -83,17 +173,6 @@
             box-shadow: 0 6px 12px rgba(249,115,22,.18);
         }
 
-    .nav-ico {
-        width: 36px;
-        height: 36px;
-        border-radius: 12px;
-        display: grid;
-        place-items: center;
-        background: rgba(249,115,22,.10);
-        border: 1px solid rgba(249,115,22,.18);
-        font-size: 16px;
-    }
-
     .nav-bottom {
         padding: 14px;
         border-top: 1px solid rgba(249,115,22,.20);
@@ -121,91 +200,117 @@
         font-weight: 800;
     }
 
-    /* ✅ Extra dark-mode polish */
-    html.theme-dark .nav-top,
-    html.theme-dark .nav-bottom {
-        border-color: rgba(255,255,255,0.10);
-    }
-
-    html.theme-dark a.nav-item {
-        background: rgba(255,255,255,0.04);
-        border-color: rgba(255,255,255,0.10);
-    }
-
-        html.theme-dark a.nav-item:hover {
-            background: rgba(249,115,22,0.14);
-            border-color: rgba(249,115,22,0.25);
-        }
-
-    html.theme-dark .streak-card {
-        background: rgba(255,255,255,0.04);
-        border-color: rgba(255,255,255,0.10);
+    /* main body area spacing */
+    .content-wrap {
+        padding: 0;
+        min-width: 0;
+        flex: 1;
     }
 </style>
 
 @if (LockState.IsUnlocked)
 {
-    <div class="nav-shell">
-        <!-- TOP -->
-        <div class="nav-top">
-            <div class="brand">
-                <div class="brand-icon">📝</div>
-                <div class="brand-title">My Journal</div>
-            </div>
-        </div>
+    <div class="app-shell">
 
-        <!-- LINKS -->
-        <div class="nav-links">
-            <NavLink class="nav-item" href="/dashboard" Match="NavLinkMatch.All">Dashboard</NavLink>
-            <NavLink class="nav-item" href="/editor">Write Entry</NavLink>
-            <NavLink class="nav-item" href="/list">Entries</NavLink>
-            <NavLink class="nav-item" href="/calendar">Timeline</NavLink>
-            <NavLink class="nav-item" href="/export">Export</NavLink>
-            <NavLink class="nav-item" href="/settings">Settings</NavLink>
-        </div>
+        <!-- ✅ LEFT SIDEBAR -->
+        <div class="nav-shell">
+            <div class="nav-top">
+                <div class="brand">
 
-        <!-- BOTTOM -->
-        <div class="nav-bottom">
-            <div class="streak-card">
-                <div>
-                    <div class="streak-num">@currentStreak</div>
-                    <div class="streak-label">day streak</div>
+                    <div class="brand-title">FluentMind</div>
                 </div>
-                <div>🔥</div>
             </div>
+
+            <div class="nav-links">
+                <NavLink class="nav-item" href="/dashboard" Match="NavLinkMatch.All">Dashboard</NavLink>
+                <NavLink class="nav-item" href="/calendar">Timeline</NavLink>
+                <NavLink class="nav-item" href="/editor">Write Entry</NavLink>
+                <NavLink class="nav-item" href="/customtags">Custom Tags</NavLink>
+                <NavLink class="nav-item" href="/list">All Entries</NavLink>
+                <NavLink class="nav-item" href="/export">Export</NavLink>
+                <NavLink class="nav-item" href="/settings">Settings</NavLink>
+               
+             
+            </div>
+
+            <div class="nav-bottom">
+                <div class="streak-card">
+                    <div>
+                        <div class="streak-num">@currentStreak</div>
+                        <div class="streak-label">day streak</div>
+                    </div>
+                    <div>🔥</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ RIGHT SIDE (TOP BAR + BODY) -->
+        <div class="main-area">
+
+            <!-- TOP HORIZONTAL NAV -->
+            <div class="topbar">
+                <div class="topbar-inner">
+                    <div class="topbar-left">
+                        <div class="top-title">Dashboard</div>
+                        <div class="top-welcome">Welcome to my Journal </div>
+                    </div>
+
+                   
+                </div>
+            </div>
+
+            <!-- IMPORTANT: this is just a wrapper.
+                 Your pages still render in MainLayout with @Body. -->
+            <div class="content-wrap"></div>
         </div>
     </div>
 }
 
 @code {
     private int currentStreak;
+    private bool _loading;
 
     protected override async Task OnInitializedAsync()
     {
-        LockState.OnChange += HandleLockStateChanged;
+        LockState.OnChange += OnLockChanged;
+        Navigation.LocationChanged += OnLocationChanged;
 
         if (LockState.IsUnlocked)
             await LoadStreak();
     }
 
-    private async void HandleLockStateChanged()
+    private void OnLockChanged()
     {
-        await InvokeAsync(StateHasChanged);
+        _ = InvokeAsync(async () =>
+        {
+            if (LockState.IsUnlocked)
+                await LoadStreak();
+            else
+                currentStreak = 0;
 
-        if (LockState.IsUnlocked)
-            await LoadStreak();
+            StateHasChanged();
+        });
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        if (!LockState.IsUnlocked) return;
+        _ = InvokeAsync(LoadStreak);
     }
 
     private async Task LoadStreak()
     {
+        if (_loading) return;
+        _loading = true;
+
         try
         {
             var db = await DatabaseService.GetConnectionAsync();
 
             var dates = (await db.Table<JournalEntry>()
-                    .OrderBy(e => e.EntryDate)
+                    .OrderBy(x => x.EntryDate)
                     .ToListAsync())
-                .Select(e => e.EntryDate.Date)
+                .Select(x => x.EntryDate.Date)
                 .ToHashSet();
 
             currentStreak = 0;
@@ -221,12 +326,17 @@
         {
             currentStreak = 0;
         }
+        finally
+        {
+            _loading = false;
+        }
 
         await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
-        LockState.OnChange -= HandleLockStateChanged;
+        LockState.OnChange -= OnLockChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }

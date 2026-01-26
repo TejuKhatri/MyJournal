@@ -1,5 +1,4 @@
-﻿
-@page "/dashboard"
+﻿@page "/dashboard"
 
 @using MyMauiApp.Data
 @using MyMauiApp.Models
@@ -22,7 +21,6 @@
         --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
         --radius: 16px;
     }
-
 
     .dashboard-container {
         padding: 16px;
@@ -262,67 +260,178 @@
         white-space: nowrap;
     }
 
-    /* ===== tags ===== */
-    .tags-list {
+    /* ✅ MOST USED TAGS - VERTICAL BAR GRAPH */
+    .bar-graph {
         display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+        flex-direction: column;
+        gap: 12px;
+        padding: 0;
+        margin: 0;
     }
 
-    .tag-item {
-        background: rgba(249, 115, 22, 0.10);
-        border: 1px solid rgba(249, 115, 22, 0.22);
-        padding: 7px 10px;
-        border-radius: 999px;
-        font-size: 12px;
+    .bar-item {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-weight: 850;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 8px;
+        background: var(--card);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .bar-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+
+    .tag-name {
+        font-size: 14px;
+        font-weight: 600;
         color: var(--text);
+        text-transform: capitalize;
+        flex: 1;
+    }
+
+    .bar {
+        height: 10px;
+        background-color: var(--primary2);
+        border-radius: 5px;
+        flex: 3; /* Adjust width proportionally */
     }
 
     .tag-count {
-        background: rgba(249, 115, 22, 0.95);
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--muted);
+        background-color: var(--primary);
         color: white;
-        padding: 2px 8px;
-        border-radius: 999px;
-        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        text-align: center;
+    }
+
+    /* Optional: Small Gap Between Tags */
+    .bar-item:not(:last-child) {
+        margin-bottom: 8px;
+    }
+
+
+    /* ✅ SMALL CALENDAR FOR MISSED DAYS */
+    .cal-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .cal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(0,0,0,0.06);
+        background: rgba(249,115,22,0.06);
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .cal-month {
+        font-size: 13px;
         font-weight: 950;
     }
 
-    /* ===== missed days ===== */
-    .missed-days-list {
-        max-height: 180px;
-        overflow-y: auto;
+    .cal-badge {
         font-size: 12px;
+        font-weight: 950;
+        color: #fff;
+        background: #ef4444;
+        border-radius: 999px;
+        padding: 4px 10px;
+    }
+
+    .cal-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+        padding: 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(0,0,0,0.06);
+        background: #fff;
+        box-shadow: 0 10px 18px rgba(15,23,42,0.06);
+    }
+
+    html.theme-dark .cal-grid {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.10);
+    }
+
+    .cal-dow {
+        text-align: center;
+        font-size: 11px;
+        font-weight: 950;
         color: var(--muted);
+        padding: 4px 0;
+    }
+
+    .cal-day {
+        height: 34px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text);
+        border: 1px solid rgba(15,23,42,0.08);
+        background: rgba(15,23,42,0.03);
+    }
+
+        .cal-day.empty {
+            border: none;
+            background: transparent;
+        }
+
+        /* ✅ FULL RED for missed */
+        .cal-day.missed {
+            background: #ef4444;
+            border-color: rgba(239,68,68,0.55);
+            color: #fff;
+            box-shadow: 0 10px 16px rgba(239,68,68,0.18);
+        }
+
+    /* ✅ MISSED LIST UNDER CALENDAR */
+    .missed-list {
+        max-height: 150px;
+        overflow-y: auto;
         border: 1px solid rgba(0,0,0,0.06);
         border-radius: 12px;
         padding: 8px 10px;
-        background: rgba(249,115,22,0.06);
+        background: rgba(239,68,68,0.06);
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 850;
     }
 
-    html.theme-dark .missed-days-list {
+    html.theme-dark .missed-list {
         border-color: rgba(255,255,255,0.10);
-        background: rgba(255,255,255,0.03);
+        background: rgba(239,68,68,0.10);
     }
 
-    .missed-day {
+    .missed-item {
         padding: 6px 0;
         border-bottom: 1px solid rgba(0,0,0,0.06);
-        font-weight: 800;
     }
 
-    html.theme-dark .missed-day {
+    html.theme-dark .missed-item {
         border-bottom-color: rgba(255,255,255,0.08);
     }
 
-    .missed-day:last-child {
+    .missed-item:last-child {
         border-bottom: none;
     }
 
-    /* ===== states ===== */
     .loading {
         text-align: center;
         padding: 28px;
@@ -363,10 +472,9 @@
         }
 </style>
 
-
 <div class="dashboard-container">
     <div class="page-header">
-        <h1 class="page-title"> Dashboard & Analytics</h1>
+        <h1 class="page-title">Dashboard & Analytics</h1>
     </div>
 
     <div class="date-range-picker">
@@ -429,12 +537,12 @@
 
             <!-- Charts -->
             <div class="charts-grid">
+
                 <!-- Mood Distribution (Pie) -->
                 <div class="chart-card">
-                    <h3> Mood Distribution</h3>
+                    <h3>Mood Distribution</h3>
 
                     @{
-                        // Percent values expected 0-100; we normalize safely anyway.
                         var moodPie = analytics.MoodDistribution
                         .OrderByDescending(m => m.Value)
                         .ToDictionary(
@@ -478,34 +586,13 @@
                     }
                 </div>
 
-                <!-- Most Used Tags -->
-                <div class="chart-card">
-                    <h3> Most Used Tags</h3>
-                    @if (analytics.MostUsedTags.Any())
-                    {
-                        <div class="tags-list">
-                            @foreach (var tag in analytics.MostUsedTags.Take(10))
-                            {
-                                <div class="tag-item">
-                                    <span>@tag.Key</span>
-                                    <span class="tag-count">@tag.Value</span>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <p style="color: #999;">No tags used yet</p>
-                    }
-                </div>
+
 
                 <!-- Tag Breakdown (Pie) -->
                 <div class="chart-card">
-                    <h3> Tag Breakdown</h3>
+                    <h3>Tag Breakdown</h3>
 
                     @{
-                        // If TagBreakdown is already percent values, great.
-                        // If it's counts, it still works because we normalize.
                         var tagPie = analytics.TagBreakdown
                         .OrderByDescending(t => t.Value)
                         .Take(8)
@@ -539,29 +626,113 @@
                     }
                 </div>
 
-                <!-- Missed Days -->
+                <!-- Most Used Tags  -->
                 <div class="chart-card">
-                    <h3> Missed Days (@analytics.MissedDays.Count)</h3>
-                    @if (analytics.MissedDays.Any())
+                    <h3>Most Used Tags</h3>
+
+                    @{
+                        var tagSource = analytics?.MostUsedTags;
+
+                        var topTags = (tagSource == null)
+                        ? new List<KeyValuePair<string, int>>()
+                        : tagSource.OrderByDescending(x => x.Value).Take(10).ToList();
+
+                        var maxCount = topTags.Count > 0 ? topTags.Max(x => x.Value) : 1;
+                    }
+
+                    @if (topTags.Count > 0)
                     {
-                        <div class="missed-days-list">
-                            @foreach (var day in analytics.MissedDays.OrderByDescending(d => d).Take(20))
+                        <div class="bar-graph">
+                            @foreach (var tag in topTags)
                             {
-                                <div class="missed-day">@day.ToString("dddd, MMMM dd, yyyy")</div>
-                            }
-                            @if (analytics.MissedDays.Count > 20)
-                            {
-                                <div class="missed-day" style="font-style: italic;">
-                                    ... and @(analytics.MissedDays.Count - 20) more
+                                <div class="bar-item">
+                                    <div class="tag-name">@tag.Key</div>
+                                    <div class="bar" style="width: @((tag.Value * 100) / maxCount)%"></div>
+                                    <div class="tag-count">@tag.Value</div>
                                 </div>
                             }
                         </div>
                     }
                     else
                     {
-                        <p style="color: #999;">Perfect streak! No missed days.</p>
+                        <p style="color:#999;">No tags used yet</p>
                     }
                 </div>
+
+                <!-- ✅ Missed Days (CALENDAR + LIST AT BOTTOM) -->
+                <div class="chart-card">
+                    <h3>Missed Days Calendar</h3>
+
+                    @{
+                        var monthToShow = new DateTime(endDate.Year, endDate.Month, 1);
+                        var missedSet = analytics.MissedDays.Select(d => d.Date).ToHashSet();
+                        var cal = BuildMonthCalendar(monthToShow);
+                        var monthName = monthToShow.ToString("MMMM yyyy");
+                        var missedThisMonth = missedSet.Count(d => d.Year == monthToShow.Year && d.Month == monthToShow.Month);
+
+                        var missedInRange = analytics.MissedDays
+                        .Select(d => d.Date)
+                        .Distinct()
+                        .OrderByDescending(d => d)
+                        .ToList();
+                    }
+
+                    <div class="cal-wrap">
+                        <div class="cal-head">
+                            <div class="cal-month">@monthName</div>
+                            <div class="cal-badge">@missedThisMonth missed</div>
+                        </div>
+
+                        <div class="cal-grid">
+                            @foreach (var dow in _dow)
+                            {
+                                <div class="cal-dow">@dow</div>
+                            }
+
+                            @foreach (var cell in cal)
+                            {
+                                if (!cell.HasValue)
+                                {
+                                    <div class="cal-day empty"></div>
+                                }
+                                else
+                                {
+                                    var d = cell.Value.Date;
+                                    var missed = missedSet.Contains(d);
+
+                                    <div class="cal-day @(missed ? "missed" : "")" title="@d.ToString("dddd, MMM dd")">
+                                        @d.Day
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <div style="font-size:12px; color: var(--muted); font-weight:850;">
+                            Total missed in range: <strong style="color: var(--text);">@analytics.MissedDays.Count</strong>
+                        </div>
+
+                        @if (missedInRange.Count > 0)
+                        {
+                            <div class="missed-list">
+                                @foreach (var md in missedInRange.Take(30))
+                                {
+                                    <div class="missed-item">@md.ToString("dddd, MMMM dd, yyyy")</div>
+                                }
+                                @if (missedInRange.Count > 30)
+                                {
+                                    <div class="missed-item" style="font-style: italic;">
+                                        ... and @(missedInRange.Count - 30) more
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p style="color:#999; margin:0;">Perfect streak! No missed days.</p>
+                        }
+                    </div>
+                </div>
+
             </div>
         }
     }
@@ -573,6 +744,8 @@
     private AnalyticsResult? analytics;
     private bool isLoading = false;
     private string errorMessage = string.Empty;
+
+    private readonly string[] _dow = new[] { "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" };
 
     protected override async Task OnInitializedAsync()
     {
@@ -600,7 +773,7 @@
         }
     }
 
-    // ---------- FIXED Palette (prevents NullReferenceException) ----------
+    // ---------- FIXED Palette ----------
     private readonly string[] _palette = new[]
     {
         "#f97316", "#fb923c", "#fdba74", "#f59e0b",
@@ -610,7 +783,6 @@
 
     private string GetPaletteColor(string key)
     {
-        // Hard safety guard (this is what fixes your crash)
         if (_palette == null || _palette.Length == 0) return "#f97316";
         if (string.IsNullOrWhiteSpace(key)) return _palette[0];
 
@@ -631,7 +803,28 @@
         };
     }
 
-    // ---------- Pie SVG (no JS) ----------
+    // ✅ Calendar cells
+    private List<DateTime?> BuildMonthCalendar(DateTime monthStart)
+    {
+        var result = new List<DateTime?>();
+
+        var first = new DateTime(monthStart.Year, monthStart.Month, 1);
+        var daysInMonth = DateTime.DaysInMonth(first.Year, first.Month);
+
+        var leadingEmpty = (int)first.DayOfWeek;
+        for (int i = 0; i < leadingEmpty; i++)
+            result.Add(null);
+
+        for (int day = 1; day <= daysInMonth; day++)
+            result.Add(new DateTime(first.Year, first.Month, day));
+
+        while (result.Count % 7 != 0)
+            result.Add(null);
+
+        return result;
+    }
+
+    // ---------- Pie SVG ----------
     private string BuildPieSvg(Dictionary<string, double> data, Func<string, string> colorForLabel)
     {
         var cleaned = data
@@ -646,7 +839,7 @@
         var cx = size / 2.0;
         var cy = size / 2.0;
         var r = 90.0;
-        var innerR = 55.0; // donut thickness
+        var innerR = 55.0;
         double startAngle = -90.0;
 
         (double x, double y) P(double angDeg, double radius)

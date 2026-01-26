@@ -1,0 +1,248 @@
+﻿@page "/customtags"
+@using MyMauiApp.Models
+@using MyMauiApp.Services
+@inject TagService TagService
+@inject NavigationManager Navigation
+
+
+
+<p class="about-life">
+    Life is a complex journey of emotions and experiences. Tags help us capture the essence of those moments and express our inner world with clarity.
+</p>
+<h3 class="page-title">Custom Tags</h3>
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="success-message">
+        <div class="success-icon">✅</div>
+        <div class="success-content">
+            <h3>Success!</h3>
+            <p>@successMessage</p>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="error-message">❌ @errorMessage</div>
+}
+
+<div class="tags-container">
+    <div class="new-tag-section">
+        <h4>New Tag</h4>
+        <div class="form-group">
+            <input type="text" class="new-tag-input" placeholder="Enter new tag name..." @bind="newTagName" />
+            <button class="btn-add-tag" @onclick="AddTag">➕ Add Tag</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string newTagName = "";
+    private string successMessage = "";
+    private string errorMessage = "";
+    private List<Tag> tags = new List<Tag>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTags();
+    }
+
+    private async Task LoadTags()
+    {
+        try
+        {
+            tags = await TagService.GetCustomTagsAsync(); // Get custom tags only
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load tags: {ex.Message}";
+        }
+    }
+
+    private async Task AddTag()
+    {
+        if (string.IsNullOrWhiteSpace(newTagName))
+        {
+            errorMessage = "Tag name cannot be empty.";
+            return;
+        }
+
+        try
+        {
+            var newTag = await TagService.CreateTagAsync(newTagName); // Create new tag using the service
+            successMessage = $"Tag '{newTag.Name}' created successfully!";
+            newTagName = "";
+            await LoadTags();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to create tag: {ex.Message}";
+        }
+    }
+}
+
+<style>
+
+    /* Light and Dark Mode */
+    :root {
+        --light-bg: #ffffff; /* White background in light mode */
+        --dark-bg: #ffffff;
+        --primary-color: #e0aaff;
+        --button-bg: #ff6f00; /* Orange button color */
+        --button-hover-bg: #e65c00; /* Darker orange */
+        --error-bg: #f8d7da;
+        --error-color: #721c24;
+        --success-bg: #d4edda;
+        --success-color: #155724;
+    }
+
+    /* Default theme (Light mode) */
+    body {
+        background-color: var(--light-bg); /* White background */
+        color: #000; /* Black font in light mode */
+        font-family: 'Arial', sans-serif;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        text-align: center;
+        color: #000; /* Black title text */
+    }
+
+    .about-life {
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .tags-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: var(--light-bg); /* White background */
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .new-tag-section {
+        background: #ffffff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .new-tag-section h4 {
+            color: #444; /* White text for better contrast */
+            margin-bottom: 15px;
+        }
+
+    .form-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .new-tag-input {
+        flex: 1;
+        padding: 8px 15px;
+        border-radius: 4px;
+        border: 1px solid #444;
+        background-color: #ffffff;
+        color: #444;
+        font-size: 14px;
+    }
+
+    .btn-add-tag {
+        padding: 10px 20px;
+        background-color: var(--button-bg);
+        color: #444;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .btn-add-tag:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+    .success-message {
+        background: var(--success-bg);
+        color: var(--success-color);
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        border: 1px solid #c3e6cb;
+    }
+
+    .error-message {
+        background: var(--error-bg);
+        color: var(--error-color);
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        border: 1px solid #f5c6cb;
+    }
+
+    /* Dark mode styles */
+    body.dark-mode {
+        background-color: var(--dark-bg); /* Dark background */
+        color: #fff; /* White font in dark mode */
+    }
+
+    .dark-mode .page-title {
+        color: #fff; /* White title text in dark mode */
+    }
+
+    .dark-mode .new-tag-section {
+        background: #666;
+    }
+
+    .dark-mode .new-tag-input {
+        background-color: #ffffff;
+        color: #f4f6f9;
+    }
+
+    .dark-mode .btn-add-tag {
+        background-color: var(--button-bg);
+    }
+
+        .dark-mode .btn-add-tag:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+    .dark-mode .success-message {
+        background: #4a7c4b;
+        color: #d4edda;
+    }
+
+    .dark-mode .error-message {
+        background: #9e2a2f;
+        color: #f8d7da;
+    }
+
+</style>
+
+<script>
+    // Toggle Dark Mode
+    document.addEventListener('DOMContentLoaded', () => {
+        const darkModeToggle = document.createElement('button');
+        darkModeToggle.textContent = '🌙 Toggle Dark Mode';
+        darkModeToggle.style.position = 'fixed';
+        darkModeToggle.style.top = '20px';
+        darkModeToggle.style.right = '20px';
+        darkModeToggle.style.padding = '10px';
+        darkModeToggle.style.backgroundColor = '#3c4c68';
+        darkModeToggle.style.color = '#fff';
+        darkModeToggle.style.border = 'none';
+        darkModeToggle.style.borderRadius = '5px';
+        darkModeToggle.style.cursor = 'pointer';
+        document.body.appendChild(darkModeToggle);
+
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+    });
+</script>

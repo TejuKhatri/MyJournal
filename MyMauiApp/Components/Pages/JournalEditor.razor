@@ -15,9 +15,9 @@
 
 <style>
     /* ✅ IMPORTANT:
-           Do NOT define :root here.
-           Theme variables must come globally from index.html / app.css.
-        */
+                   Do NOT define :root here.
+                   Theme variables must come globally from index.html / app.css.
+            */
 
     .editor-container {
         max-width: 1100px;
@@ -101,6 +101,14 @@
     .grid-2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    /* ✅ NEW (for 3 mood dropdowns in 1 row) */
+    .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 12px;
         margin-bottom: 12px;
     }
@@ -423,44 +431,7 @@
             transform: translateY(-1px);
             background: rgba(249,115,22,0.14);
         }
-
-    /* ===== Extra dark-mode polish ===== */
-    html.theme-dark .toolrow,
-    html.theme-dark .tags-wrap,
-    html.theme-dark .preview-toggle {
-        background: rgba(255,255,255,0.04);
-        border-color: rgba(255,255,255,0.10);
-    }
-
-    html.theme-dark .toolgroup,
-    html.theme-dark .preview-tab.active,
-    html.theme-dark .markdown-preview,
-    html.theme-dark .tag-chip {
-        background: rgba(255,255,255,0.05);
-        border-color: rgba(255,255,255,0.12);
-    }
-
-    html.theme-dark .tool-sep {
-        background: rgba(255,255,255,0.10);
-    }
-
-    html.theme-dark .input,
-    html.theme-dark .select,
-    html.theme-dark .textarea,
-    html.theme-dark .tool-select,
-    html.theme-dark .tag-search {
-        background: rgba(255,255,255,0.06);
-        border-color: rgba(255,255,255,0.12);
-        color: var(--text);
-    }
-
-        html.theme-dark .input::placeholder,
-        html.theme-dark .textarea::placeholder,
-        html.theme-dark .tag-search::placeholder {
-            color: rgba(248,250,252,0.55);
-        }
 </style>
-
 
 <div class="editor-container">
     <div class="page-header">
@@ -523,7 +494,6 @@
         <div class="form-group">
             <label>Content <span class="required">*</span></label>
 
-            <!-- Functional toolbar -->
             <div class="toolrow">
                 <div class="toolgroup">
                     <select class="tool-select" @bind="fontName">
@@ -544,24 +514,14 @@
                     <button type="button" class="tool-btn" title="Bold" @onclick="() => ApplyWrap(MdBold, MdBold)"><b>B</b></button>
                     <button type="button" class="tool-btn" title="Italic" @onclick="() => ApplyWrap(MdItalic, MdItalic)"><i>I</i></button>
                     <button type="button" class="tool-btn" title="Underline" @onclick="() => ApplyWrap(HtmlUnderlineOpen, HtmlUnderlineClose)"><u>U</u></button>
+                    <button type="button" class="tool-btn" title="Insert Link" @onclick="ApplyLink">🔗</button>
                 </div>
 
                 <span class="tool-sep"></span>
 
-                <button type="button" class="tool-btn" title="Heading 1"
-                        @onclick='() => ApplyLinePrefix("# ")'>
-                    H1
-                </button>
-
-                <button type="button" class="tool-btn" title="Heading 2"
-                        @onclick='() => ApplyLinePrefix("## ")'>
-                    H2
-                </button>
-
-                <button type="button" class="tool-btn" title="Heading 3"
-                        @onclick='() => ApplyLinePrefix("### ")'>
-                    H3
-                </button>
+                <button type="button" class="tool-btn" title="Heading 1" @onclick='() => ApplyLinePrefix("# ")'>H1</button>
+                <button type="button" class="tool-btn" title="Heading 2" @onclick='() => ApplyLinePrefix("## ")'>H2</button>
+                <button type="button" class="tool-btn" title="Heading 3" @onclick='() => ApplyLinePrefix("### ")'>H3</button>
 
                 <span class="tool-sep"></span>
 
@@ -605,28 +565,57 @@
                 </div>
             }
         </div>
-        <!-- Moods -->
-        <div class="grid-2">
+
+        <!-- ✅ FIXED MOODS (GROUPED POSITIVE/NEGATIVE/NEUTRAL) -->
+        <div class="grid-3">
             <div class="form-group">
                 <label>Primary Mood <span class="required">*</span></label>
                 <select class="select" @bind="primaryMoodId">
                     <option value="0">-- Select primary mood --</option>
-                    @foreach (var mood in moods)
+
+                    @foreach (var g in MoodGroups())
                     {
-                        <option value="@mood.Id">@mood.Name</option>
+                        <optgroup label="@g.Label">
+                            @foreach (var m in g.Items)
+                            {
+                                <option value="@m.Id">@m.Emoji @m.Name</option>
+                            }
+                        </optgroup>
                     }
                 </select>
             </div>
-        </div>
 
-        <div class="grid-2">
+
+            <div class="form-group">
+                <label>Secondary Mood 1</label>
+                <select class="select" @bind="secondaryMood1Id">
+                    <option value="">-- None --</option>
+
+                    @foreach (var g in MoodGroups())
+                    {
+                        <optgroup label="@g.Label">
+                            @foreach (var m in g.Items.Where(x => x.Id != primaryMoodId && x.Id != secondaryMood2Id))
+                            {
+                                <option value="@m.Id">@m.Emoji @m.Name</option>
+                            }
+                        </optgroup>
+                    }
+                </select>
+            </div>
+
             <div class="form-group">
                 <label>Secondary Mood 2</label>
                 <select class="select" @bind="secondaryMood2Id">
                     <option value="">-- None --</option>
-                    @foreach (var mood in moods.Where(m => m.Id != primaryMoodId && m.Id != secondaryMood1Id))
+
+                    @foreach (var g in MoodGroups())
                     {
-                        <option value="@mood.Id">@mood.Name</option>
+                        <optgroup label="@g.Label">
+                            @foreach (var m in g.Items.Where(x => x.Id != primaryMoodId && x.Id != secondaryMood1Id))
+                            {
+                                <option value="@m.Id">@m.Emoji @m.Name</option>
+                            }
+                        </optgroup>
                     }
                 </select>
             </div>
@@ -637,15 +626,7 @@
             <label>Tags</label>
 
             <div class="tags-wrap">
-                <div class="tags-toolbar">
-                    <input class="tag-search" type="text" @bind="tagSearch" @bind:event="oninput" placeholder="Search tags..." />
 
-                    <input class="tag-search" style="flex:0; min-width:220px;"
-                           type="text" @bind="newTagName" @bind:event="oninput"
-                           placeholder="Create new tag..." maxlength="50" />
-
-                    <button type="button" class="tag-add-btn" @onclick="AddCustomTag">➕ Add</button>
-                </div>
 
                 <div class="tags-grid">
                     @foreach (var tag in FilteredTags())
@@ -663,8 +644,6 @@
                     }
                 </div>
             </div>
-
-         
         </div>
 
         <!-- Actions -->
@@ -684,7 +663,6 @@
 </div>
 
 <script>
-    // Simple textarea formatting helpers (works in MAUI Blazor WebView too)
     window.editorTools = {
         wrap: function (id, before, after) {
             const el = document.getElementById(id);
@@ -764,13 +742,35 @@
             el.focus();
             el.setSelectionRange(lineStart, lineStart + lines.length);
             el.dispatchEvent(new Event('input', { bubbles: true }));
+        },
+
+        link: function (id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            const start = el.selectionStart ?? 0;
+            const end = el.selectionEnd ?? 0;
+            const value = el.value ?? "";
+
+            const selected = value.substring(start, end) || "link text";
+            const url = prompt("Enter URL (https://...):", "https://");
+            if (!url) return;
+
+            const insert = "[" + selected + "](" + url + ")";
+            const next = value.substring(0, start) + insert + value.substring(end);
+
+            el.value = next;
+
+            const cursor = start + insert.length;
+            el.focus();
+            el.setSelectionRange(cursor, cursor);
+            el.dispatchEvent(new Event('input', { bubbles: true }));
         }
     };
 </script>
 
 @code {
     [Parameter] public int? EntryId { get; set; }
-
     private bool isNewEntry => !EntryId.HasValue;
 
     private DateTime existingDate = DateTime.MinValue;
@@ -783,10 +783,9 @@
     private int primaryMoodId = 0;
     private int? secondaryMood1Id;
     private int? secondaryMood2Id;
-
     private List<Mood> moods = new();
 
-    // tags (systematic)
+    // tags
     private List<Tag> availableTags = new();
     private Dictionary<int, bool> selectedTags = new();
     private string newTagName = "";
@@ -809,7 +808,7 @@
     private ElementReference contentRef;
     private string contentElementId = $"content-editor-{Guid.NewGuid():N}";
 
-    // Toolbar constants (FIX for red underline)
+    // Toolbar constants
     private const string MdBold = "**";
     private const string MdItalic = "*";
     private const string HtmlUnderlineOpen = "<u>";
@@ -823,18 +822,25 @@
             await LoadTags();
 
             if (EntryId.HasValue)
-            {
                 await LoadExistingEntry();
-            }
             else
-            {
                 UpdateWordCount();
-            }
         }
         catch (Exception ex)
         {
             errorMessage = $"Failed to load data: {ex.Message}";
         }
+    }
+
+    // ✅ GROUPS EXACTLY AS YOU WANTED: POSITIVE, NEGATIVE, NEUTRAL
+    private IEnumerable<(string Label, List<Mood> Items)> MoodGroups()
+    {
+        return new List<(string, List<Mood>)>
+        {
+            ("POSITIVE", moods.Where(m => m.Sentiment == "Positive").OrderBy(m => m.Name).ToList()),
+            ("NEGATIVE", moods.Where(m => m.Sentiment == "Negative").OrderBy(m => m.Name).ToList()),
+            ("NEUTRAL",  moods.Where(m => m.Sentiment == "Neutral").OrderBy(m => m.Name).ToList())
+        };
     }
 
     private async Task LoadTags()
@@ -861,9 +867,7 @@
             foreach (var tag in entry.Tags)
             {
                 if (selectedTags.ContainsKey(tag.Id))
-                {
                     selectedTags[tag.Id] = true;
-                }
             }
 
             UpdateWordCount();
@@ -885,9 +889,7 @@
     private void ToggleTag(int tagId)
     {
         if (selectedTags.ContainsKey(tagId))
-        {
             selectedTags[tagId] = !selectedTags[tagId];
-        }
     }
 
     private async Task AddCustomTag()
@@ -924,6 +926,24 @@
         if (primaryMoodId == 0)
         {
             errorMessage = "Please select a primary mood";
+            return;
+        }
+
+        // ✅ FIX: Prevent duplicates
+        if (secondaryMood1Id.HasValue && secondaryMood1Id.Value == primaryMoodId)
+        {
+            errorMessage = "Secondary Mood 1 cannot be the same as Primary Mood.";
+            return;
+        }
+        if (secondaryMood2Id.HasValue && secondaryMood2Id.Value == primaryMoodId)
+        {
+            errorMessage = "Secondary Mood 2 cannot be the same as Primary Mood.";
+            return;
+        }
+        if (secondaryMood1Id.HasValue && secondaryMood2Id.HasValue &&
+            secondaryMood1Id.Value == secondaryMood2Id.Value)
+        {
+            errorMessage = "Secondary moods must be different from each other.";
             return;
         }
 
@@ -997,7 +1017,6 @@
     }
 
     private Task<bool> ConfirmDelete() => Task.FromResult(true);
-
     private void Cancel() => Navigation.NavigateTo("/list");
 
     private void OnContentInput(ChangeEventArgs e)
@@ -1026,7 +1045,7 @@
         wordCount = cleaned.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
     }
 
-    /* ===== Toolbar actions (functional) ===== */
+    /* ===== Toolbar actions ===== */
     private async Task ApplyWrap(string before, string after)
         => await JS.InvokeVoidAsync("editorTools.wrap", contentElementId, before, after);
 
@@ -1036,7 +1055,10 @@
     private async Task ApplyBulletList()
         => await JS.InvokeVoidAsync("editorTools.bulletList", contentElementId);
 
-    /* ===== Markdown preview renderer (improved) ===== */
+    private async Task ApplyLink()
+        => await JS.InvokeVoidAsync("editorTools.link", contentElementId);
+
+    /* ===== Markdown preview renderer ===== */
     private string RenderMarkdown(string markdown)
     {
         if (string.IsNullOrWhiteSpace(markdown))
@@ -1047,22 +1069,17 @@
             .Replace("<", "&lt;")
             .Replace(">", "&gt;");
 
-        // Re-allow underline tags inserted by our toolbar
         html = html.Replace("&lt;u&gt;", "<u>").Replace("&lt;/u&gt;", "</u>");
 
-        // Headings
         html = Regex.Replace(html, @"^### (.+)$", "<h3>$1</h3>", RegexOptions.Multiline);
         html = Regex.Replace(html, @"^## (.+)$", "<h2>$1</h2>", RegexOptions.Multiline);
         html = Regex.Replace(html, @"^# (.+)$", "<h1>$1</h1>", RegexOptions.Multiline);
 
-        // Bold / Italic
         html = Regex.Replace(html, @"\*\*(.+?)\*\*", "<strong>$1</strong>");
         html = Regex.Replace(html, @"\*(.+?)\*", "<em>$1</em>");
 
-        // Links
         html = Regex.Replace(html, @"\[(.+?)\]\((.+?)\)", "<a href='$2' target='_blank'>$1</a>");
 
-        // Bullet lists
         html = Regex.Replace(html,
             @"(?:^|\n)(- .+(?:\n- .+)*)",
             m =>
@@ -1076,7 +1093,6 @@
             RegexOptions.Multiline);
 
         html = html.Replace("\n", "<br>");
-
         return html;
     }
 }
