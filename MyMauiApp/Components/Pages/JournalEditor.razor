@@ -1,0 +1,1082 @@
+﻿@page "/editor"
+@page "/editor/{EntryId:int}"
+
+@using MyMauiApp.Data
+@using MyMauiApp.Models
+@using MyMauiApp.Services
+@using System.Text.RegularExpressions
+@using Microsoft.AspNetCore.Components.Web
+
+@inject JournalService JournalService
+@inject MoodService MoodService
+@inject TagService TagService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<style>
+    /* ✅ IMPORTANT:
+           Do NOT define :root here.
+           Theme variables must come globally from index.html / app.css.
+        */
+
+    .editor-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 16px;
+        color: var(--text);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 12px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+
+    .page-title {
+        font-size: 22px;
+        font-weight: 950;
+        margin: 0;
+        letter-spacing: .2px;
+        color: var(--text);
+    }
+
+    .word-count {
+        font-size: 12px;
+        color: var(--muted);
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-weight: 900;
+        white-space: nowrap;
+        box-shadow: var(--shadow);
+    }
+
+    .success-message {
+        background: rgba(34,197,94,0.14);
+        color: #22c55e;
+        padding: 12px;
+        border-radius: 14px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(34,197,94,0.30);
+        font-weight: 900;
+        box-shadow: var(--shadow);
+    }
+
+    .error-message {
+        background: rgba(239,68,68,0.14);
+        color: #ef4444;
+        padding: 12px;
+        border-radius: 14px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(239,68,68,0.30);
+        font-weight: 900;
+        box-shadow: var(--shadow);
+    }
+
+    .info-box {
+        background: rgba(249,115,22,0.10);
+        border: 1px solid rgba(249,115,22,0.22);
+        border-left: 5px solid rgba(249,115,22,0.75);
+        padding: 12px;
+        margin-bottom: 10px;
+        border-radius: 14px;
+        font-size: 13px;
+        color: var(--text);
+        font-weight: 850;
+        box-shadow: var(--shadow);
+    }
+
+    .editor-form {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 16px;
+        box-shadow: var(--shadow);
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 900;
+            margin-bottom: 6px;
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: .2px;
+            text-transform: uppercase;
+        }
+
+    .required {
+        color: var(--danger);
+    }
+
+    .input,
+    .select,
+    .textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid rgba(2,6,23,.10);
+        border-radius: 14px;
+        font-size: 13px;
+        font-family: inherit;
+        background: var(--card);
+        color: var(--text);
+        outline: none;
+        transition: box-shadow .12s ease, border-color .12s ease;
+        font-weight: 750;
+        box-sizing: border-box;
+    }
+
+    .textarea {
+        min-height: 320px;
+        line-height: 1.7;
+        resize: vertical;
+        font-weight: 650;
+    }
+
+        .input:focus,
+        .select:focus,
+        .textarea:focus {
+            border-color: rgba(249,115,22,.65);
+            box-shadow: 0 0 0 3px rgba(249,115,22,.18);
+        }
+
+    .hint {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        margin-top: 6px;
+        display: block;
+    }
+
+    /* ===== Toolbar ===== */
+    .toolrow {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 10px;
+        border: 1px solid rgba(249,115,22,0.18);
+        border-radius: 16px;
+        background: rgba(249,115,22,0.06);
+        margin-bottom: 10px;
+        box-shadow: var(--shadow);
+    }
+
+    .toolgroup {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        padding: 6px;
+        border-radius: 14px;
+        background: var(--card);
+        border: 1px solid rgba(2,6,23,.08);
+    }
+
+    .tool-select {
+        padding: 8px 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(2,6,23,.10);
+        background: var(--card);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 850;
+        outline: none;
+    }
+
+    .tool-btn {
+        padding: 8px 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(2,6,23,.10);
+        background: var(--card);
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 950;
+        transition: transform .12s ease, background .12s ease, border-color .12s ease;
+        user-select: none;
+        min-width: 40px;
+    }
+
+        .tool-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(249,115,22,0.10);
+            border-color: rgba(249,115,22,0.25);
+        }
+
+    .tool-sep {
+        width: 1px;
+        height: 26px;
+        background: rgba(2,6,23,.10);
+        margin: 0 2px;
+    }
+
+    /* Preview tabs */
+    .preview-toggle {
+        display: inline-flex;
+        gap: 8px;
+        background: rgba(2,6,23,.03);
+        border: 1px solid rgba(2,6,23,.08);
+        padding: 6px;
+        border-radius: 14px;
+        margin-bottom: 10px;
+    }
+
+    .preview-tab {
+        padding: 8px 12px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 950;
+        color: var(--muted);
+        transition: background .12s ease, border-color .12s ease, color .12s ease;
+    }
+
+        .preview-tab.active {
+            background: var(--card);
+            border-color: rgba(2,6,23,.08);
+            color: var(--text);
+        }
+
+    /* Preview area */
+    .markdown-preview {
+        margin-top: 10px;
+        padding: 14px;
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid rgba(2,6,23,.08);
+        border-radius: 16px;
+        min-height: 220px;
+        box-shadow: var(--shadow);
+    }
+
+    /* Tags */
+    .tags-wrap {
+        border: 1px solid rgba(2,6,23,.08);
+        border-radius: 16px;
+        padding: 12px;
+        background: rgba(249,115,22,0.05);
+    }
+
+    .tags-toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+
+    .tag-search {
+        flex: 1;
+        min-width: 220px;
+        padding: 10px 12px;
+        border: 1px solid rgba(2,6,23,.10);
+        border-radius: 14px;
+        outline: none;
+        background: var(--card);
+        color: var(--text);
+        font-weight: 750;
+        font-size: 13px;
+        box-sizing: border-box;
+    }
+
+        .tag-search:focus {
+            border-color: rgba(249,115,22,.65);
+            box-shadow: 0 0 0 3px rgba(249,115,22,.18);
+        }
+
+    .tag-add-btn {
+        padding: 10px 12px;
+        background: rgba(34,197,94,0.14);
+        color: #22c55e;
+        border: 1px solid rgba(34,197,94,0.30);
+        border-radius: 14px;
+        cursor: pointer;
+        font-weight: 950;
+        font-size: 13px;
+        transition: transform .12s ease, background .12s ease;
+        white-space: nowrap;
+    }
+
+        .tag-add-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(34,197,94,0.18);
+        }
+
+    .tags-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        max-height: 240px;
+        overflow: auto;
+        padding: 4px;
+    }
+
+    .tag-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 10px;
+        background: var(--card);
+        border: 1px solid rgba(2,6,23,.10);
+        border-radius: 999px;
+        cursor: pointer;
+        user-select: none;
+        font-size: 12px;
+        font-weight: 900;
+        color: var(--text);
+        transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+
+        .tag-chip:hover {
+            transform: translateY(-1px);
+            background: rgba(249,115,22,0.10);
+            border-color: rgba(249,115,22,0.25);
+        }
+
+        .tag-chip.selected {
+            background: rgba(249,115,22,0.14);
+            border-color: rgba(249,115,22,0.45);
+            color: var(--text);
+        }
+
+    .tag-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(249,115,22,.55);
+        border: 1px solid rgba(249,115,22,.65);
+    }
+
+    /* Actions */
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(2,6,23,.08);
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 950;
+        cursor: pointer;
+        transition: transform .12s ease, filter .12s ease, background .12s ease;
+        border: 1px solid rgba(2,6,23,0.12);
+        background: var(--card);
+        color: var(--text);
+    }
+
+        .btn:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+        }
+
+    .btn-primary {
+        background: linear-gradient(180deg, var(--primary2), var(--primary));
+        color: #fff;
+        border-color: rgba(249,115,22,0.35);
+        box-shadow: 0 10px 18px rgba(249,115,22,0.18);
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+        }
+
+    .btn-danger {
+        background: rgba(239,68,68,.14);
+        color: #ef4444;
+        border: 1px solid rgba(239,68,68,.30);
+    }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            background: rgba(239,68,68,.18);
+        }
+
+    .btn-secondary {
+        background: rgba(249,115,22,0.08);
+        border: 1px solid rgba(249,115,22,0.22);
+        color: var(--text);
+    }
+
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            background: rgba(249,115,22,0.14);
+        }
+
+    /* ===== Extra dark-mode polish ===== */
+    html.theme-dark .toolrow,
+    html.theme-dark .tags-wrap,
+    html.theme-dark .preview-toggle {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.10);
+    }
+
+    html.theme-dark .toolgroup,
+    html.theme-dark .preview-tab.active,
+    html.theme-dark .markdown-preview,
+    html.theme-dark .tag-chip {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.12);
+    }
+
+    html.theme-dark .tool-sep {
+        background: rgba(255,255,255,0.10);
+    }
+
+    html.theme-dark .input,
+    html.theme-dark .select,
+    html.theme-dark .textarea,
+    html.theme-dark .tool-select,
+    html.theme-dark .tag-search {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.12);
+        color: var(--text);
+    }
+
+        html.theme-dark .input::placeholder,
+        html.theme-dark .textarea::placeholder,
+        html.theme-dark .tag-search::placeholder {
+            color: rgba(248,250,252,0.55);
+        }
+</style>
+
+
+<div class="editor-container">
+    <div class="page-header">
+        <h1 class="page-title"> @(isNewEntry ? "New Journal Entry" : "Edit Entry")</h1>
+        <div class="word-count">@wordCount words</div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="success-message">@successMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="error-message">@errorMessage</div>
+    }
+
+    @if (!isNewEntry && existingDate != DateTime.MinValue)
+    {
+        <div class="info-box">
+            📅 Editing entry from <strong>@existingDate.ToString("dddd, MMMM dd, yyyy")</strong>
+        </div>
+    }
+
+    <div class="editor-form">
+
+        <!-- Top details -->
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Entry Date <span class="required">*</span></label>
+                <input class="input" type="date"
+                       @bind="entryDate"
+                       disabled="@(!isNewEntry)"
+                       max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                @if (isNewEntry)
+                {
+                    <small class="hint">Only one entry per day.</small>
+                }
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <input class="input" type="text"
+                       @bind="category"
+                       placeholder="e.g., Personal, Work, Travel..."
+                       maxlength="100" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Title</label>
+            <input class="input" type="text"
+                   @bind="title"
+                   @bind:event="oninput"
+                   placeholder="Give your entry a meaningful title..."
+                   maxlength="200" />
+        </div>
+
+        <!-- Content -->
+        <div class="form-group">
+            <label>Content <span class="required">*</span></label>
+
+            <!-- Functional toolbar -->
+            <div class="toolrow">
+                <div class="toolgroup">
+                    <select class="tool-select" @bind="fontName">
+                        @foreach (var f in fontOptions)
+                        {
+                            <option value="@f">@f</option>
+                        }
+                    </select>
+                    <select class="tool-select" @bind="fontSize">
+                        @foreach (var s in fontSizes)
+                        {
+                            <option value="@s">@s</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="toolgroup">
+                    <button type="button" class="tool-btn" title="Bold" @onclick="() => ApplyWrap(MdBold, MdBold)"><b>B</b></button>
+                    <button type="button" class="tool-btn" title="Italic" @onclick="() => ApplyWrap(MdItalic, MdItalic)"><i>I</i></button>
+                    <button type="button" class="tool-btn" title="Underline" @onclick="() => ApplyWrap(HtmlUnderlineOpen, HtmlUnderlineClose)"><u>U</u></button>
+                </div>
+
+                <span class="tool-sep"></span>
+
+                <button type="button" class="tool-btn" title="Heading 1"
+                        @onclick='() => ApplyLinePrefix("# ")'>
+                    H1
+                </button>
+
+                <button type="button" class="tool-btn" title="Heading 2"
+                        @onclick='() => ApplyLinePrefix("## ")'>
+                    H2
+                </button>
+
+                <button type="button" class="tool-btn" title="Heading 3"
+                        @onclick='() => ApplyLinePrefix("### ")'>
+                    H3
+                </button>
+
+                <span class="tool-sep"></span>
+
+                <div class="toolgroup">
+                    <button type="button" class="tool-btn" title="Bullet list" @onclick="ApplyBulletList">List</button>
+                </div>
+            </div>
+
+            <div class="preview-toggle">
+                <button type="button" class="preview-tab @(showPreview ? "" : "active")"
+                        @onclick="() => showPreview = false">
+                    Write
+                </button>
+                <button type="button" class="preview-tab @(showPreview ? "active" : "")"
+                        @onclick="() => showPreview = true">
+                    Preview
+                </button>
+            </div>
+
+            @if (!showPreview)
+            {
+                <textarea id="@contentElementId"
+                          @ref="contentRef"
+                          class="textarea"
+                          style="font-family:@fontName; font-size:@($"{fontSize}px");"
+                          value="@content"
+                          @oninput="OnContentInput"
+                          placeholder="Write your thoughts here..."></textarea>
+            }
+            else
+            {
+                <div class="markdown-preview">
+                    @if (string.IsNullOrWhiteSpace(content))
+                    {
+                        <p style="color: var(--muted); font-weight: 850;">Nothing to preview yet. Start writing!</p>
+                    }
+                    else
+                    {
+                        @((MarkupString)RenderMarkdown(content))
+                    }
+                </div>
+            }
+        </div>
+        <!-- Moods -->
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Primary Mood <span class="required">*</span></label>
+                <select class="select" @bind="primaryMoodId">
+                    <option value="0">-- Select primary mood --</option>
+                    @foreach (var mood in moods)
+                    {
+                        <option value="@mood.Id">@mood.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Secondary Mood 2</label>
+                <select class="select" @bind="secondaryMood2Id">
+                    <option value="">-- None --</option>
+                    @foreach (var mood in moods.Where(m => m.Id != primaryMoodId && m.Id != secondaryMood1Id))
+                    {
+                        <option value="@mood.Id">@mood.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="form-group">
+            <label>Tags</label>
+
+            <div class="tags-wrap">
+                <div class="tags-toolbar">
+                    <input class="tag-search" type="text" @bind="tagSearch" @bind:event="oninput" placeholder="Search tags..." />
+
+                    <input class="tag-search" style="flex:0; min-width:220px;"
+                           type="text" @bind="newTagName" @bind:event="oninput"
+                           placeholder="Create new tag..." maxlength="50" />
+
+                    <button type="button" class="tag-add-btn" @onclick="AddCustomTag">➕ Add</button>
+                </div>
+
+                <div class="tags-grid">
+                    @foreach (var tag in FilteredTags())
+                    {
+                        var isChecked = selectedTags.GetValueOrDefault(tag.Id, false);
+                        <div class="tag-chip @(isChecked ? "selected" : "")"
+                             @onclick="() => ToggleTag(tag.Id)">
+                            <span class="tag-dot"></span>
+                            <span>@tag.Name</span>
+                            @if (!tag.IsPredefined)
+                            {
+                                <span style="color: var(--muted); font-weight: 900;">Custom</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+         
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button class="btn btn-primary" @onclick="SaveEntry" disabled="@isSaving">
+                @(isSaving ? " Saving..." : " Save Entry")
+            </button>
+
+            @if (!isNewEntry)
+            {
+                <button class="btn btn-danger" @onclick="DeleteEntry" disabled="@isSaving">🗑 Delete</button>
+            }
+
+            <button class="btn btn-secondary" @onclick="Cancel">❌ Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple textarea formatting helpers (works in MAUI Blazor WebView too)
+    window.editorTools = {
+        wrap: function (id, before, after) {
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            const start = el.selectionStart ?? 0;
+            const end = el.selectionEnd ?? 0;
+            const value = el.value ?? "";
+
+            const selected = value.substring(start, end);
+            const next = value.substring(0, start) + before + selected + after + value.substring(end);
+
+            el.value = next;
+            const cursor = start + before.length + selected.length + after.length;
+            el.focus();
+            el.setSelectionRange(cursor, cursor);
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        },
+
+        linePrefix: function (id, prefix) {
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            const start = el.selectionStart ?? 0;
+            const end = el.selectionEnd ?? 0;
+            const value = el.value ?? "";
+
+            const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+            const lineEnd = value.indexOf("\n", end);
+            const actualLineEnd = lineEnd === -1 ? value.length : lineEnd;
+
+            const block = value.substring(lineStart, actualLineEnd);
+            const lines = block.split("\n").map(l => {
+                return l.startsWith(prefix) ? l.substring(prefix.length) : (prefix + l);
+            }).join("\n");
+
+            const next = value.substring(0, lineStart) + lines + value.substring(actualLineEnd);
+
+            el.value = next;
+            el.focus();
+            el.setSelectionRange(lineStart, lineStart + lines.length);
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        },
+
+        bulletList: function (id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            const start = el.selectionStart ?? 0;
+            const end = el.selectionEnd ?? 0;
+            const value = el.value ?? "";
+
+            if (start === end) {
+                const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+                const next = value.substring(0, lineStart) + "- " + value.substring(lineStart);
+                el.value = next;
+                const cursor = start + 2;
+                el.focus();
+                el.setSelectionRange(cursor, cursor);
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                return;
+            }
+
+            const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+            const lineEnd = value.indexOf("\n", end);
+            const actualLineEnd = lineEnd === -1 ? value.length : lineEnd;
+
+            const block = value.substring(lineStart, actualLineEnd);
+            const lines = block.split("\n").map(l => {
+                if (l.trim().length === 0) return l;
+                return l.startsWith("- ") ? l.substring(2) : ("- " + l);
+            }).join("\n");
+
+            const next = value.substring(0, lineStart) + lines + value.substring(actualLineEnd);
+
+            el.value = next;
+            el.focus();
+            el.setSelectionRange(lineStart, lineStart + lines.length);
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    };
+</script>
+
+@code {
+    [Parameter] public int? EntryId { get; set; }
+
+    private bool isNewEntry => !EntryId.HasValue;
+
+    private DateTime existingDate = DateTime.MinValue;
+    private string title = "";
+    private string content = "";
+    private string category = "";
+    private DateTime entryDate = DateTime.Today;
+
+    // moods (dropdowns)
+    private int primaryMoodId = 0;
+    private int? secondaryMood1Id;
+    private int? secondaryMood2Id;
+
+    private List<Mood> moods = new();
+
+    // tags (systematic)
+    private List<Tag> availableTags = new();
+    private Dictionary<int, bool> selectedTags = new();
+    private string newTagName = "";
+    private string tagSearch = "";
+
+    // ui/state
+    private string successMessage = "";
+    private string errorMessage = "";
+    private bool isSaving = false;
+    private bool showPreview = false;
+    private int wordCount = 0;
+
+    // "Word-like" font controls
+    private string fontName = "Aptos";
+    private int fontSize = 12;
+    private List<string> fontOptions = new() { "Aptos", "Segoe UI", "Calibri", "Arial", "Times New Roman", "Georgia" };
+    private List<int> fontSizes = new() { 10, 11, 12, 14, 16, 18, 20, 24, 28, 32 };
+
+    // textarea ref + id for JS tools
+    private ElementReference contentRef;
+    private string contentElementId = $"content-editor-{Guid.NewGuid():N}";
+
+    // Toolbar constants (FIX for red underline)
+    private const string MdBold = "**";
+    private const string MdItalic = "*";
+    private const string HtmlUnderlineOpen = "<u>";
+    private const string HtmlUnderlineClose = "</u>";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            moods = await MoodService.GetAllMoodsAsync();
+            await LoadTags();
+
+            if (EntryId.HasValue)
+            {
+                await LoadExistingEntry();
+            }
+            else
+            {
+                UpdateWordCount();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load data: {ex.Message}";
+        }
+    }
+
+    private async Task LoadTags()
+    {
+        availableTags = await TagService.GetAllTagsAsync();
+        selectedTags = availableTags.ToDictionary(t => t.Id, t => false);
+    }
+
+    private async Task LoadExistingEntry()
+    {
+        var entry = await JournalService.GetEntryByIdAsync(EntryId!.Value);
+        if (entry != null)
+        {
+            title = entry.Title;
+            content = entry.Content;
+            category = entry.Category;
+            entryDate = entry.EntryDate;
+            existingDate = entry.EntryDate;
+
+            primaryMoodId = entry.PrimaryMood?.Id ?? 0;
+            secondaryMood1Id = entry.SecondaryMood1?.Id;
+            secondaryMood2Id = entry.SecondaryMood2?.Id;
+
+            foreach (var tag in entry.Tags)
+            {
+                if (selectedTags.ContainsKey(tag.Id))
+                {
+                    selectedTags[tag.Id] = true;
+                }
+            }
+
+            UpdateWordCount();
+        }
+        else
+        {
+            errorMessage = "Entry not found";
+        }
+    }
+
+    private IEnumerable<Tag> FilteredTags()
+    {
+        if (string.IsNullOrWhiteSpace(tagSearch))
+            return availableTags;
+
+        return availableTags.Where(t => t.Name.Contains(tagSearch, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void ToggleTag(int tagId)
+    {
+        if (selectedTags.ContainsKey(tagId))
+        {
+            selectedTags[tagId] = !selectedTags[tagId];
+        }
+    }
+
+    private async Task AddCustomTag()
+    {
+        if (string.IsNullOrWhiteSpace(newTagName))
+            return;
+
+        try
+        {
+            var tag = await TagService.CreateTagAsync(newTagName.Trim());
+            await LoadTags();
+            selectedTags[tag.Id] = true;
+            newTagName = "";
+            successMessage = $"Tag '{tag.Name}' created successfully!";
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to create tag: {ex.Message}";
+        }
+    }
+
+    private async Task SaveEntry()
+    {
+        errorMessage = "";
+        successMessage = "";
+
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            errorMessage = "Content is required";
+            return;
+        }
+
+        if (primaryMoodId == 0)
+        {
+            errorMessage = "Please select a primary mood";
+            return;
+        }
+
+        try
+        {
+            isSaving = true;
+            StateHasChanged();
+
+            var entry = new JournalEntry
+            {
+                Title = title.Trim(),
+                Content = content.Trim(),
+                Category = category.Trim(),
+                EntryDate = entryDate.Date,
+                PrimaryMoodId = primaryMoodId,
+                SecondaryMood1Id = secondaryMood1Id,
+                SecondaryMood2Id = secondaryMood2Id
+            };
+
+            if (isNewEntry)
+            {
+                entry = await JournalService.CreateEntryAsync(entry);
+                successMessage = "Entry created successfully!";
+            }
+            else
+            {
+                entry.Id = EntryId!.Value;
+                entry = await JournalService.UpdateEntryAsync(entry);
+                successMessage = "Entry updated successfully!";
+            }
+
+            var selectedTagIds = selectedTags
+                .Where(kvp => kvp.Value)
+                .Select(kvp => kvp.Key)
+                .ToList();
+
+            await TagService.AddTagsToEntryAsync(entry.Id, selectedTagIds);
+
+            await Task.Delay(900);
+            Navigation.NavigateTo("/list");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to save entry: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteEntry()
+    {
+        if (!await ConfirmDelete())
+            return;
+
+        try
+        {
+            isSaving = true;
+            await JournalService.DeleteEntryAsync(EntryId!.Value);
+            successMessage = "Entry deleted successfully!";
+            await Task.Delay(600);
+            Navigation.NavigateTo("/list");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to delete entry: {ex.Message}";
+            isSaving = false;
+        }
+    }
+
+    private Task<bool> ConfirmDelete() => Task.FromResult(true);
+
+    private void Cancel() => Navigation.NavigateTo("/list");
+
+    private void OnContentInput(ChangeEventArgs e)
+    {
+        content = e.Value?.ToString() ?? "";
+        UpdateWordCount();
+    }
+
+    private void UpdateWordCount()
+    {
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            wordCount = 0;
+            return;
+        }
+
+        var cleaned = Regex.Replace(content, @"[#*_`~\[\]()>]", " ");
+        cleaned = Regex.Replace(cleaned, @"\s+", " ").Trim();
+
+        if (string.IsNullOrWhiteSpace(cleaned))
+        {
+            wordCount = 0;
+            return;
+        }
+
+        wordCount = cleaned.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+
+    /* ===== Toolbar actions (functional) ===== */
+    private async Task ApplyWrap(string before, string after)
+        => await JS.InvokeVoidAsync("editorTools.wrap", contentElementId, before, after);
+
+    private async Task ApplyLinePrefix(string prefix)
+        => await JS.InvokeVoidAsync("editorTools.linePrefix", contentElementId, prefix);
+
+    private async Task ApplyBulletList()
+        => await JS.InvokeVoidAsync("editorTools.bulletList", contentElementId);
+
+    /* ===== Markdown preview renderer (improved) ===== */
+    private string RenderMarkdown(string markdown)
+    {
+        if (string.IsNullOrWhiteSpace(markdown))
+            return "";
+
+        var html = markdown
+            .Replace("&", "&amp;")
+            .Replace("<", "&lt;")
+            .Replace(">", "&gt;");
+
+        // Re-allow underline tags inserted by our toolbar
+        html = html.Replace("&lt;u&gt;", "<u>").Replace("&lt;/u&gt;", "</u>");
+
+        // Headings
+        html = Regex.Replace(html, @"^### (.+)$", "<h3>$1</h3>", RegexOptions.Multiline);
+        html = Regex.Replace(html, @"^## (.+)$", "<h2>$1</h2>", RegexOptions.Multiline);
+        html = Regex.Replace(html, @"^# (.+)$", "<h1>$1</h1>", RegexOptions.Multiline);
+
+        // Bold / Italic
+        html = Regex.Replace(html, @"\*\*(.+?)\*\*", "<strong>$1</strong>");
+        html = Regex.Replace(html, @"\*(.+?)\*", "<em>$1</em>");
+
+        // Links
+        html = Regex.Replace(html, @"\[(.+?)\]\((.+?)\)", "<a href='$2' target='_blank'>$1</a>");
+
+        // Bullet lists
+        html = Regex.Replace(html,
+            @"(?:^|\n)(- .+(?:\n- .+)*)",
+            m =>
+            {
+                var items = m.Groups[1].Value
+                    .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(l => l.StartsWith("- ") ? l.Substring(2) : l)
+                    .Select(t => $"<li>{t}</li>");
+                return "\n<ul>" + string.Join("", items) + "</ul>";
+            },
+            RegexOptions.Multiline);
+
+        html = html.Replace("\n", "<br>");
+
+        return html;
+    }
+}

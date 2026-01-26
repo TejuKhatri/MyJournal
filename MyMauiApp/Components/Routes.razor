@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using MyMauiApp.Services
+
+@inject AppLockState LockState
+@inject IPinService PinService
+@inject NavigationManager Nav
+
+<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="@GuardNavigation">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MyMauiApp.Components.Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+
+    <NotFound>
+        <LayoutView Layout="@typeof(MyMauiApp.Components.Layout.MainLayout)">
+            <p style="padding:16px;">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    private async Task GuardNavigation(NavigationContext context)
+    {
+        // allow root or splash
+        if (string.IsNullOrWhiteSpace(context.Path) ||
+            context.Path.Equals("splash", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        // if pin not enabled -> allow
+        var pinEnabled = await PinService.IsPinEnabledAsync();
+        if (!pinEnabled) return;
+
+        // if not unlocked -> redirect to splash
+        if (!LockState.IsUnlocked)
+        {
+            await Task.Yield(); // avoid navigation exception
+            Nav.NavigateTo("/splash", replace: true);
+        }
+    }
+}

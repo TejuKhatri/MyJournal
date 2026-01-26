@@ -1,0 +1,232 @@
+﻿@implements IDisposable
+@using MyMauiApp.Data
+@using MyMauiApp.Models
+@using MyMauiApp.Services
+@using Microsoft.AspNetCore.Components.Routing
+
+@inject DatabaseService DatabaseService
+@inject AppLockState LockState
+
+<style>
+    /* ✅ Uses global theme variables from app.css */
+    .nav-shell {
+        width: 240px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: var(--nav-bg);
+        border-right: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        color: var(--text);
+    }
+
+    .nav-top {
+        padding: 16px;
+        border-bottom: 1px solid rgba(249,115,22,.20);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .brand-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: rgba(249,115,22,.12);
+        border: 1px solid rgba(249,115,22,.25);
+        font-size: 18px;
+    }
+
+    .brand-title {
+        font-size: 14px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .nav-links {
+        flex: 1;
+        padding: 14px 12px;
+        overflow: auto;
+    }
+
+    a.nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 14px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 900;
+        background: var(--nav-item-bg);
+        border: 1px solid var(--nav-item-border);
+        transition: .15s ease;
+    }
+
+        a.nav-item:hover {
+            background: rgba(249,115,22,.10);
+            border-color: rgba(249,115,22,.22);
+            transform: translateY(-1px);
+        }
+
+        a.nav-item.active,
+        a.nav-item[aria-current="page"] {
+            background: rgba(249,115,22,.16);
+            border-color: rgba(249,115,22,.35);
+            box-shadow: 0 6px 12px rgba(249,115,22,.18);
+        }
+
+    .nav-ico {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: rgba(249,115,22,.10);
+        border: 1px solid rgba(249,115,22,.18);
+        font-size: 16px;
+    }
+
+    .nav-bottom {
+        padding: 14px;
+        border-top: 1px solid rgba(249,115,22,.20);
+    }
+
+    .streak-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        border-radius: 14px;
+        background: var(--nav-item-bg);
+        border: 1px solid rgba(249,115,22,.25);
+    }
+
+    .streak-num {
+        font-size: 18px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .streak-label {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 800;
+    }
+
+    /* ✅ Extra dark-mode polish */
+    html.theme-dark .nav-top,
+    html.theme-dark .nav-bottom {
+        border-color: rgba(255,255,255,0.10);
+    }
+
+    html.theme-dark a.nav-item {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.10);
+    }
+
+        html.theme-dark a.nav-item:hover {
+            background: rgba(249,115,22,0.14);
+            border-color: rgba(249,115,22,0.25);
+        }
+
+    html.theme-dark .streak-card {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.10);
+    }
+</style>
+
+@if (LockState.IsUnlocked)
+{
+    <div class="nav-shell">
+        <!-- TOP -->
+        <div class="nav-top">
+            <div class="brand">
+                <div class="brand-icon">📝</div>
+                <div class="brand-title">My Journal</div>
+            </div>
+        </div>
+
+        <!-- LINKS -->
+        <div class="nav-links">
+            <NavLink class="nav-item" href="/dashboard" Match="NavLinkMatch.All">Dashboard</NavLink>
+            <NavLink class="nav-item" href="/editor">Write Entry</NavLink>
+            <NavLink class="nav-item" href="/list">Entries</NavLink>
+            <NavLink class="nav-item" href="/calendar">Timeline</NavLink>
+            <NavLink class="nav-item" href="/export">Export</NavLink>
+            <NavLink class="nav-item" href="/settings">Settings</NavLink>
+        </div>
+
+        <!-- BOTTOM -->
+        <div class="nav-bottom">
+            <div class="streak-card">
+                <div>
+                    <div class="streak-num">@currentStreak</div>
+                    <div class="streak-label">day streak</div>
+                </div>
+                <div>🔥</div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private int currentStreak;
+
+    protected override async Task OnInitializedAsync()
+    {
+        LockState.OnChange += HandleLockStateChanged;
+
+        if (LockState.IsUnlocked)
+            await LoadStreak();
+    }
+
+    private async void HandleLockStateChanged()
+    {
+        await InvokeAsync(StateHasChanged);
+
+        if (LockState.IsUnlocked)
+            await LoadStreak();
+    }
+
+    private async Task LoadStreak()
+    {
+        try
+        {
+            var db = await DatabaseService.GetConnectionAsync();
+
+            var dates = (await db.Table<JournalEntry>()
+                    .OrderBy(e => e.EntryDate)
+                    .ToListAsync())
+                .Select(e => e.EntryDate.Date)
+                .ToHashSet();
+
+            currentStreak = 0;
+            var d = DateTime.Today;
+
+            while (dates.Contains(d))
+            {
+                currentStreak++;
+                d = d.AddDays(-1);
+            }
+        }
+        catch
+        {
+            currentStreak = 0;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        LockState.OnChange -= HandleLockStateChanged;
+    }
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>MyMauiApp</title>
+
+    <base href="/" />
+
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="MyMauiApp.styles.css" />
+
+    <!-- ✅ GLOBAL THEME TOKENS (APP-WIDE) -->
+    <style>
+        :root {
+            --primary: #f97316;
+            --primary2: #fb923c;
+            --accent: #fdba74;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --bg: #fff7ed;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #fed7aa;
+            --shadow: 0 10px 24px rgba(15,23,42,.08);
+            --radius: 16px;
+        }
+
+        html.theme-dark {
+            --bg: #0b1220;
+            --card: #0f172a;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: rgba(253,186,116,.20);
+            --shadow: 0 10px 24px rgba(0,0,0,.35);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="status-bar-safe-area"></div>
+
+    <div id="app">Loading...</div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.webview.js"></script>
+
+    <script>
+        // ==============================
+        // Word editor helper (keep)
+        // ==============================
+        window.wordEditor = window.wordEditor || {
+            exec: (cmd, value = null) => document.execCommand(cmd, false, value),
+            getHtml: (el) => el?.innerHTML ?? "",
+            setHtml: (el, html) => { if (el) el.innerHTML = html || ""; }
+        };
+
+        // ==============================
+        // ✅ Global theme helper (fixed)
+        // ==============================
+        window.theme = window.theme || {};
+
+        window.theme.get = () => localStorage.getItem("theme") || "Light";
+
+        window.theme.set = (mode) => {
+            // mode can be: "Light" / "Dark" OR "light" / "dark"
+            const m = (mode || "Light").toString().toLowerCase();
+            localStorage.setItem("theme", m === "dark" ? "Dark" : "Light");
+
+            const root = document.documentElement;
+            if (m === "dark") root.classList.add("theme-dark");
+            else root.classList.remove("theme-dark");
+        };
+
+        window.theme.apply = () => {
+            const saved = (localStorage.getItem("theme") || "Light");
+            window.theme.set(saved);
+            return saved;
+        };
+
+        // ✅ apply on startup
+        window.theme.apply();
+    </script>
+</body>
+</html>

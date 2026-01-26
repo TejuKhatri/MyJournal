@@ -1,0 +1,58 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\biduth\\MyMauiApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\components\\pages\\dashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\components\\pages\\dashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": ".gitignore",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\.gitignore",
+              "RelativeDocumentMoniker": "MyMauiApp\\.gitignore",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\.gitignore",
+              "RelativeToolTip": "MyMauiApp\\.gitignore",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-01-26T14:55:43.44Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Dashboard.razor",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\Dashboard.razor",
+              "RelativeDocumentMoniker": "MyMauiApp\\Components\\Pages\\Dashboard.razor",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\Dashboard.razor",
+              "RelativeToolTip": "MyMauiApp\\Components\\Pages\\Dashboard.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-26T14:53:21.383Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

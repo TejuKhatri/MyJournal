@@ -1,0 +1,57 @@
+﻿@inherits LayoutComponentBase
+
+<style>
+    .app-shell {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+    }
+
+    .app-sidebar {
+        width: 240px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        overflow: hidden;
+        border-right: 1px solid var(--border);
+        background: var(--nav-bg);
+        box-shadow: var(--shadow);
+    }
+
+    .app-main {
+        min-height: 100vh;
+        overflow: auto;
+    }
+
+    .app-content {
+        padding: 16px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* ✅ Dark-mode polish (uses your index.html class: theme-dark) */
+    html.theme-dark .app-shell {
+        background: var(--bg);
+        color: var(--text);
+    }
+
+    html.theme-dark .app-sidebar {
+        border-right-color: var(--border);
+        background: var(--nav-bg);
+        box-shadow: var(--shadow);
+    }
+</style>
+
+<div class="app-shell">
+    <aside class="app-sidebar">
+        <NavMenu />
+    </aside>
+
+    <main class="app-main">
+        <div class="app-content">
+            @Body
+        </div>
+    </main>
+</div>

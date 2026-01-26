@@ -1,0 +1,699 @@
+﻿
+@page "/dashboard"
+
+@using MyMauiApp.Data
+@using MyMauiApp.Models
+@using MyMauiApp.Services
+@using System.Text
+
+@inject AnalyticsService AnalyticsService
+@inject NavigationManager Navigation
+
+<style>
+    :root {
+        --primary: #f97316;
+        --primary2: #fb923c;
+        --accent: #fdba74;
+        --bg: #fff7ed;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #fed7aa;
+        --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        --radius: 16px;
+    }
+
+
+    .dashboard-container {
+        padding: 16px;
+        max-width: 1100px;
+        margin: 0 auto;
+        color: var(--text);
+    }
+
+    .page-header {
+        margin-bottom: 14px;
+    }
+
+    .page-title {
+        font-size: 22px;
+        font-weight: 950;
+        margin: 0 0 6px 0;
+        color: var(--text);
+        letter-spacing: .2px;
+    }
+
+    /* ===== date range ===== */
+    .date-range-picker {
+        display: flex;
+        gap: 12px;
+        align-items: end;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 12px;
+        box-shadow: var(--shadow);
+    }
+
+    .date-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 160px;
+    }
+
+        .date-input-group label {
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .2px;
+        }
+
+    .date-input {
+        padding: 9px 10px;
+        border: 1px solid rgba(0,0,0,0.10);
+        border-radius: 12px;
+        font-size: 13px;
+        background: var(--card);
+        color: var(--text);
+        outline: none;
+    }
+
+    html.theme-dark .date-input {
+        border-color: rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.04);
+        color: var(--text);
+    }
+
+    .date-input:focus {
+        border-color: rgba(249, 115, 22, 0.7);
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18);
+    }
+
+    .btn-primary {
+        padding: 9px 14px;
+        background: linear-gradient(180deg, var(--primary2), var(--primary));
+        color: white;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 950;
+        transition: transform .15s ease, filter .15s ease;
+        box-shadow: 0 10px 18px rgba(249, 115, 22, 0.22);
+    }
+
+        .btn-primary:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+        }
+
+    /* ===== stats ===== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            opacity: .9;
+        }
+
+        .stat-card h3 {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 0 0 8px 0;
+            font-weight: 950;
+            text-transform: uppercase;
+            letter-spacing: .2px;
+        }
+
+    .stat-value {
+        font-size: 26px;
+        font-weight: 950;
+        color: var(--text);
+        line-height: 1.1;
+    }
+
+    .stat-subtitle {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+        font-weight: 800;
+    }
+
+    /* ===== charts ===== */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .chart-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        box-shadow: var(--shadow);
+    }
+
+        .chart-card h3 {
+            font-size: 14px;
+            margin: 0 0 12px 0;
+            font-weight: 950;
+            color: var(--text);
+            letter-spacing: .2px;
+        }
+
+    /* ===== pie ===== */
+    .pie-wrap {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .pie {
+        width: 220px;
+        height: 220px;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: var(--card);
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+        display: grid;
+        place-items: center;
+    }
+
+    html.theme-dark .pie {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.12);
+    }
+
+    .legend {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 180px;
+        flex: 1 1 auto;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.06);
+        background: rgba(249,115,22,0.08);
+        font-size: 12px;
+        font-weight: 850;
+        color: var(--text);
+    }
+
+    html.theme-dark .legend-item {
+        border-color: rgba(255,255,255,0.10);
+        background: rgba(249,115,22,0.10);
+    }
+
+    .legend-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .swatch {
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+        border: 1px solid rgba(0,0,0,0.12);
+        flex: 0 0 auto;
+    }
+
+    html.theme-dark .swatch {
+        border-color: rgba(255,255,255,0.18);
+    }
+
+    .legend-right {
+        color: var(--muted);
+        font-weight: 950;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    /* ===== tags ===== */
+    .tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tag-item {
+        background: rgba(249, 115, 22, 0.10);
+        border: 1px solid rgba(249, 115, 22, 0.22);
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 850;
+        color: var(--text);
+    }
+
+    .tag-count {
+        background: rgba(249, 115, 22, 0.95);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 950;
+    }
+
+    /* ===== missed days ===== */
+    .missed-days-list {
+        max-height: 180px;
+        overflow-y: auto;
+        font-size: 12px;
+        color: var(--muted);
+        border: 1px solid rgba(0,0,0,0.06);
+        border-radius: 12px;
+        padding: 8px 10px;
+        background: rgba(249,115,22,0.06);
+    }
+
+    html.theme-dark .missed-days-list {
+        border-color: rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.03);
+    }
+
+    .missed-day {
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+        font-weight: 800;
+    }
+
+    html.theme-dark .missed-day {
+        border-bottom-color: rgba(255,255,255,0.08);
+    }
+
+    .missed-day:last-child {
+        border-bottom: none;
+    }
+
+    /* ===== states ===== */
+    .loading {
+        text-align: center;
+        padding: 28px;
+        color: var(--muted);
+        font-weight: 850;
+    }
+
+    .error-message {
+        background: rgba(239, 68, 68, 0.10);
+        color: #b91c1c;
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        padding: 12px;
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+        font-weight: 900;
+    }
+
+    html.theme-dark .error-message {
+        color: #fecaca;
+        border-color: rgba(239,68,68,0.35);
+        background: rgba(239,68,68,0.14);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 16px;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--card);
+        box-shadow: var(--shadow);
+    }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+            color: var(--text);
+            font-weight: 950;
+        }
+</style>
+
+
+<div class="dashboard-container">
+    <div class="page-header">
+        <h1 class="page-title"> Dashboard & Analytics</h1>
+    </div>
+
+    <div class="date-range-picker">
+        <div class="date-input-group">
+            <label>Start Date</label>
+            <input type="date" class="date-input" @bind="startDate" />
+        </div>
+        <div class="date-input-group">
+            <label>End Date</label>
+            <input type="date" class="date-input" @bind="endDate" />
+        </div>
+        <button class="btn-primary" @onclick="LoadAnalytics">Load Analytics</button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading">Loading analytics...</div>
+    }
+    else if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="error-message">@errorMessage</div>
+    }
+    else if (analytics != null)
+    {
+        if (analytics.TotalEntries == 0)
+        {
+            <div class="empty-state">
+                <h3>No entries found</h3>
+                <p>Start journaling to see your analytics!</p>
+            </div>
+        }
+        else
+        {
+            <!-- Summary Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Entries</h3>
+                    <div class="stat-value">@analytics.TotalEntries</div>
+                    <div class="stat-subtitle">in selected range</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Current Streak</h3>
+                    <div class="stat-value">@analytics.CurrentStreak</div>
+                    <div class="stat-subtitle">consecutive days</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Longest Streak</h3>
+                    <div class="stat-value">@analytics.LongestStreak</div>
+                    <div class="stat-subtitle">all time record</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Average Words</h3>
+                    <div class="stat-value">@analytics.AverageWordCount.ToString("F0")</div>
+                    <div class="stat-subtitle">per entry</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <!-- Mood Distribution (Pie) -->
+                <div class="chart-card">
+                    <h3> Mood Distribution</h3>
+
+                    @{
+                        // Percent values expected 0-100; we normalize safely anyway.
+                        var moodPie = analytics.MoodDistribution
+                        .OrderByDescending(m => m.Value)
+                        .ToDictionary(
+                        k => k.Key,
+                        v => (double)analytics.MoodPercentages.GetValueOrDefault(v.Key, 0)
+                        );
+                    }
+
+                    @if (moodPie.Any() && moodPie.Values.Sum() > 0)
+                    {
+                        <div class="pie-wrap">
+                            <div class="pie">
+                                @((MarkupString)BuildPieSvg(moodPie, GetMoodColor))
+                            </div>
+
+                            <div class="legend">
+                                @foreach (var item in moodPie.OrderByDescending(x => x.Value))
+                                {
+                                    <div class="legend-item">
+                                        <div class="legend-left">
+                                            <span class="swatch" style="background:@GetMoodColor(item.Key)"></span>
+                                            <span>@item.Key</span>
+                                        </div>
+                                        <div class="legend-right">@item.Value.ToString("0")%</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(analytics.MostFrequentMood))
+                        {
+                            <p style="margin-top: 12px; font-size: 13px; color: var(--muted); font-weight: 800;">
+                                <strong style="color: var(--text);">Most Frequent:</strong>
+                                @analytics.MostFrequentMood (@analytics.MostFrequentMoodCount times)
+                            </p>
+                        }
+                    }
+                    else
+                    {
+                        <p style="color: #999;">No mood data available</p>
+                    }
+                </div>
+
+                <!-- Most Used Tags -->
+                <div class="chart-card">
+                    <h3> Most Used Tags</h3>
+                    @if (analytics.MostUsedTags.Any())
+                    {
+                        <div class="tags-list">
+                            @foreach (var tag in analytics.MostUsedTags.Take(10))
+                            {
+                                <div class="tag-item">
+                                    <span>@tag.Key</span>
+                                    <span class="tag-count">@tag.Value</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p style="color: #999;">No tags used yet</p>
+                    }
+                </div>
+
+                <!-- Tag Breakdown (Pie) -->
+                <div class="chart-card">
+                    <h3> Tag Breakdown</h3>
+
+                    @{
+                        // If TagBreakdown is already percent values, great.
+                        // If it's counts, it still works because we normalize.
+                        var tagPie = analytics.TagBreakdown
+                        .OrderByDescending(t => t.Value)
+                        .Take(8)
+                        .ToDictionary(k => k.Key, v => (double)v.Value);
+                    }
+
+                    @if (tagPie.Any() && tagPie.Values.Sum() > 0)
+                    {
+                        <div class="pie-wrap">
+                            <div class="pie">
+                                @((MarkupString)BuildPieSvg(tagPie, GetPaletteColor))
+                            </div>
+
+                            <div class="legend">
+                                @foreach (var item in tagPie.OrderByDescending(x => x.Value))
+                                {
+                                    <div class="legend-item">
+                                        <div class="legend-left">
+                                            <span class="swatch" style="background:@GetPaletteColor(item.Key)"></span>
+                                            <span>@item.Key</span>
+                                        </div>
+                                        <div class="legend-right">@item.Value.ToString("0")</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p style="color: #999;">No tag data available</p>
+                    }
+                </div>
+
+                <!-- Missed Days -->
+                <div class="chart-card">
+                    <h3> Missed Days (@analytics.MissedDays.Count)</h3>
+                    @if (analytics.MissedDays.Any())
+                    {
+                        <div class="missed-days-list">
+                            @foreach (var day in analytics.MissedDays.OrderByDescending(d => d).Take(20))
+                            {
+                                <div class="missed-day">@day.ToString("dddd, MMMM dd, yyyy")</div>
+                            }
+                            @if (analytics.MissedDays.Count > 20)
+                            {
+                                <div class="missed-day" style="font-style: italic;">
+                                    ... and @(analytics.MissedDays.Count - 20) more
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p style="color: #999;">Perfect streak! No missed days.</p>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private DateTime startDate = DateTime.Today.AddMonths(-1);
+    private DateTime endDate = DateTime.Today;
+    private AnalyticsResult? analytics;
+    private bool isLoading = false;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAnalytics();
+    }
+
+    private async Task LoadAnalytics()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = string.Empty;
+            StateHasChanged();
+
+            analytics = await AnalyticsService.GetAnalyticsAsync(startDate, endDate);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load analytics: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    // ---------- FIXED Palette (prevents NullReferenceException) ----------
+    private readonly string[] _palette = new[]
+    {
+        "#f97316", "#fb923c", "#fdba74", "#f59e0b",
+        "#fca5a5", "#c4b5fd", "#93c5fd", "#86efac",
+        "#a7f3d0", "#fcd34d", "#e5e7eb", "#cbd5e1"
+    };
+
+    private string GetPaletteColor(string key)
+    {
+        // Hard safety guard (this is what fixes your crash)
+        if (_palette == null || _palette.Length == 0) return "#f97316";
+        if (string.IsNullOrWhiteSpace(key)) return _palette[0];
+
+        var idx = Math.Abs(key.GetHashCode()) % _palette.Length;
+        return _palette[idx];
+    }
+
+    private string GetMoodColor(string mood)
+    {
+        if (string.IsNullOrWhiteSpace(mood)) return "#94a3b8";
+
+        return mood.Trim().ToLower() switch
+        {
+            "positive" => "#22c55e",
+            "neutral" => "#94a3b8",
+            "negative" => "#ef4444",
+            _ => GetPaletteColor(mood)
+        };
+    }
+
+    // ---------- Pie SVG (no JS) ----------
+    private string BuildPieSvg(Dictionary<string, double> data, Func<string, string> colorForLabel)
+    {
+        var cleaned = data
+            .Where(kv => kv.Value > 0)
+            .Select(kv => new KeyValuePair<string, double>(kv.Key, kv.Value))
+            .ToList();
+
+        var total = cleaned.Sum(x => x.Value);
+        if (total <= 0) return "";
+
+        var size = 200;
+        var cx = size / 2.0;
+        var cy = size / 2.0;
+        var r = 90.0;
+        var innerR = 55.0; // donut thickness
+        double startAngle = -90.0;
+
+        (double x, double y) P(double angDeg, double radius)
+        {
+            var rad = (Math.PI / 180.0) * angDeg;
+            return (cx + radius * Math.Cos(rad), cy + radius * Math.Sin(rad));
+        }
+
+        var paths = new StringBuilder();
+
+        foreach (var (label, value) in cleaned)
+        {
+            var sweep = (value / total) * 360.0;
+            var endAngle = startAngle + sweep;
+
+            var (x1, y1) = P(startAngle, r);
+            var (x2, y2) = P(endAngle, r);
+
+            var (ix1, iy1) = P(startAngle, innerR);
+            var (ix2, iy2) = P(endAngle, innerR);
+
+            var largeArc = sweep > 180 ? 1 : 0;
+
+            var d =
+                $"M {x1:0.###} {y1:0.###} " +
+                $"A {r:0.###} {r:0.###} 0 {largeArc} 1 {x2:0.###} {y2:0.###} " +
+                $"L {ix2:0.###} {iy2:0.###} " +
+                $"A {innerR:0.###} {innerR:0.###} 0 {largeArc} 0 {ix1:0.###} {iy1:0.###} Z";
+
+            var fill = colorForLabel?.Invoke(label) ?? "#f97316";
+
+            paths.AppendLine(
+                $"<path d=\"{d}\" fill=\"{fill}\" stroke=\"rgba(2,6,23,0.10)\" stroke-width=\"1\" />"
+            );
+
+            startAngle = endAngle;
+        }
+
+        var center =
+            "<circle cx=\"100\" cy=\"100\" r=\"48\" fill=\"white\" stroke=\"rgba(2,6,23,0.06)\" />" +
+            "<text x=\"100\" y=\"98\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"900\" fill=\"#64748b\">TOTAL</text>" +
+            "<text x=\"100\" y=\"118\" text-anchor=\"middle\" font-size=\"18\" font-weight=\"950\" fill=\"#0f172a\">100%</text>";
+
+        return
+            $"<svg width=\"220\" height=\"220\" viewBox=\"0 0 {size} {size}\" role=\"img\" aria-label=\"Pie chart\">" +
+            paths.ToString() +
+            center +
+            "</svg>";
+    }
+}

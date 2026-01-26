@@ -1,0 +1,598 @@
+﻿@page "/export"
+
+@using MyMauiApp.Data
+@using MyMauiApp.Models
+@using MyMauiApp.Services
+
+@inject ExportService ExportService
+@inject JournalService JournalService
+
+<style>
+    /* ===== Dashboard Theme (Light Orange + White) ===== */
+    :root {
+        --primary: #f97316;
+        --primary2: #fb923c;
+        --accent: #fdba74;
+        --bg: #fff7ed;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #fed7aa;
+        --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        --radius: 16px;
+        --dangerBg: rgba(239,68,68,0.14);
+        --dangerBorder: rgba(239,68,68,0.30);
+        --dangerText: #7f1d1d;
+        --successBg: rgba(34,197,94,0.14);
+        --successBorder: rgba(34,197,94,0.30);
+        --successText: #166534;
+    }
+
+    .export-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 16px;
+        color: var(--text);
+    }
+
+    .page-header {
+        margin-bottom: 14px;
+    }
+
+    .page-title {
+        font-size: 22px;
+        font-weight: 950;
+        margin: 0 0 6px 0;
+        color: var(--text);
+        letter-spacing: .2px;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 750;
+    }
+
+    /* Card */
+    .export-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        box-shadow: var(--shadow);
+    }
+
+    .section-title {
+        font-size: 14px;
+        font-weight: 950;
+        color: var(--text);
+        margin: 0 0 10px 0;
+        letter-spacing: .2px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Date range */
+    .date-range-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--muted);
+        letter-spacing: .2px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .date-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid rgba(0,0,0,0.12);
+        border-radius: 14px;
+        font-size: 13px;
+        background: var(--card);
+        color: var(--text);
+        outline: none;
+        box-sizing: border-box;
+        transition: box-shadow .12s ease, border-color .12s ease, background .12s ease;
+    }
+
+    html.theme-dark .date-input {
+        border-color: rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.04);
+    }
+
+    .date-input:focus {
+        border-color: rgba(249,115,22,.65);
+        box-shadow: 0 0 0 3px rgba(249,115,22,.18);
+    }
+
+    /* Quick ranges */
+    .quick-ranges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+        margin-bottom: 12px;
+    }
+
+    .quick-range-btn {
+        padding: 7px 12px;
+        background: rgba(249,115,22,0.10);
+        border: 1px solid rgba(249,115,22,0.22);
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 900;
+        color: var(--text);
+        transition: transform .15s ease, background .15s ease;
+    }
+
+        .quick-range-btn:hover {
+            background: rgba(249,115,22,0.16);
+            transform: translateY(-1px);
+        }
+
+    /* Preview section */
+    .preview-section {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow: var(--shadow);
+    }
+
+    .preview-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+    }
+
+    .stat-box {
+        background: var(--card);
+        border: 1px solid rgba(0,0,0,0.08);
+        border-radius: var(--radius);
+        padding: 12px;
+        box-shadow: 0 10px 18px rgba(15, 23, 42, 0.05);
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    html.theme-dark .stat-box {
+        border-color: rgba(255,255,255,0.12);
+        box-shadow: none;
+    }
+
+    .stat-box::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        opacity: .92;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: 950;
+        color: var(--text);
+        margin-top: 4px;
+    }
+
+    .stat-label {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .2px;
+    }
+
+    /* Note */
+    .note-box {
+        background: rgba(249,115,22,0.10);
+        border: 1px solid rgba(249,115,22,0.22);
+        border-left: 5px solid rgba(249,115,22,0.75);
+        padding: 12px;
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+        color: var(--text);
+        font-weight: 850;
+        font-size: 13px;
+    }
+
+        .note-box ul {
+            margin: 8px 0 0 18px;
+            padding: 0;
+            color: var(--muted);
+            font-weight: 750;
+            font-size: 12px;
+        }
+
+        .note-box li {
+            margin-bottom: 6px;
+        }
+
+    /* Actions */
+    .export-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+        align-items: center;
+    }
+
+    .btn {
+        border-radius: 14px;
+        padding: 11px 14px;
+        font-size: 14px;
+        font-weight: 950;
+        cursor: pointer;
+        border: 1px solid rgba(0,0,0,0.12);
+        background: var(--card);
+        color: var(--text);
+        transition: transform .15s ease, filter .15s ease, background .15s ease;
+        box-sizing: border-box;
+    }
+
+    html.theme-dark .btn {
+        border-color: rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.04);
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-primary {
+        flex: 1;
+        min-width: 220px;
+        background: linear-gradient(180deg, var(--primary2), var(--primary));
+        border-color: rgba(249,115,22,0.35);
+        color: #fff;
+        box-shadow: 0 10px 18px rgba(249,115,22,0.18);
+    }
+
+        .btn-primary:hover {
+            filter: brightness(1.05);
+        }
+
+        .btn-primary:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+    .btn-secondary {
+        background: rgba(249,115,22,0.08);
+        border: 1px solid rgba(249,115,22,0.22);
+        color: var(--text);
+        font-weight: 950;
+        min-width: 120px;
+    }
+
+        .btn-secondary:hover {
+            background: rgba(249,115,22,0.14);
+        }
+
+    /* Messages */
+    .success-message {
+        background: rgba(34,197,94,0.14);
+        color: #166534;
+        padding: 12px 14px;
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+        border: 1px solid rgba(34,197,94,0.30);
+        font-weight: 850;
+        font-size: 13px;
+    }
+
+    html.theme-dark .success-message {
+        color: #86efac;
+        background: rgba(34,197,94,0.12);
+        border-color: rgba(34,197,94,0.25);
+    }
+
+    .file-path {
+        margin-top: 8px;
+        background: rgba(255,255,255,0.7);
+        padding: 10px;
+        border-radius: 12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 12px;
+        word-break: break-all;
+        border: 1px dashed rgba(0,0,0,0.14);
+        color: var(--text);
+    }
+
+    html.theme-dark .file-path {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.14);
+    }
+
+    .error-message {
+        background: rgba(239,68,68,0.14);
+        color: #7f1d1d;
+        padding: 12px 14px;
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+        border: 1px solid rgba(239,68,68,0.30);
+        font-weight: 850;
+        font-size: 13px;
+    }
+
+    html.theme-dark .error-message {
+        color: #fca5a5;
+        background: rgba(239,68,68,0.12);
+        border-color: rgba(239,68,68,0.25);
+    }
+</style>
+
+
+<div class="export-container">
+    <div class="page-header">
+        <h1 class="page-title"> Export Journals</h1>
+       
+    </div>
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="success-message">
+             Export Successful! Your journal has been exported.
+            <div class="file-path"> @exportPath</div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="error-message"> @errorMessage</div>
+    }
+
+    <div class="export-card">
+        <!-- ✅ Your title is back exactly -->
+        <div class="section-title">🗓 Select Date Range</div>
+
+        <div class="date-range-inputs">
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date"
+                       class="date-input"
+                       @bind="startDate"
+                       @bind:event="oninput"
+                       @onchange="UpdatePreview"
+                       max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date"
+                       class="date-input"
+                       @bind="endDate"
+                       @bind:event="oninput"
+                       @onchange="UpdatePreview"
+                       max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            </div>
+        </div>
+
+        <div class="quick-ranges">
+            <button class="quick-range-btn" @onclick="SetLastWeek">Last 7 Days</button>
+            <button class="quick-range-btn" @onclick="SetLastMonth">Last 30 Days</button>
+            <button class="quick-range-btn" @onclick="SetThisMonth">This Month</button>
+            <button class="quick-range-btn" @onclick="SetLastThreeMonths">Last 3 Months</button>
+            <button class="quick-range-btn" @onclick="SetThisYear">This Year</button>
+            <button class="quick-range-btn" @onclick="SetAllTime">All Time</button>
+        </div>
+
+        @if (previewStats != null)
+        {
+            <div class="preview-section">
+                <div class="section-title"> Export Preview</div>
+
+                <div class="preview-stats">
+                    <div class="stat-box">
+                        <div class="stat-value">@previewStats.TotalEntries</div>
+                        <div class="stat-label">Entries</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-value">@previewStats.TotalWords</div>
+                        <div class="stat-label">Total Words</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-value">
+                            @((previewStats.TotalWords / Math.Max(1, previewStats.TotalEntries)).ToString("F0"))
+                        </div>
+                        <div class="stat-label">Avg / Entry</div>
+                    </div>
+                </div>
+
+                @if (previewStats.TotalEntries > 0)
+                {
+                    <div style="margin-top: 10px; font-size: 12px; color: var(--muted); font-weight: 850;">
+                        <strong style="color: var(--text);">Range:</strong> @previewStats.DateRange
+                    </div>
+                }
+            </div>
+
+            @if (previewStats.TotalEntries == 0)
+            {
+                <div class="note-box">
+                    ⚠️ No entries found in the selected date range. Please adjust your dates.
+                </div>
+            }
+        }
+
+        <!-- ✅ Your NOTE is back (and kept) -->
+        <div class="note-box">
+            <strong>📌 Export Information</strong>
+            <ul>
+                <li>PDF will include all entries in the selected date range</li>
+                <li>Each entry shows: date, title, content, moods, tags, and metadata</li>
+                <li>File will be saved to your Desktop</li>
+                <li>Markdown formatting will be converted to plain text</li>
+            </ul>
+        </div>
+
+        <div class="export-actions">
+            <button class="btn btn-primary"
+                    @onclick="ExportToPdf"
+                    disabled="@(isExporting || (previewStats?.TotalEntries ?? 0) == 0)">
+                @if (isExporting)
+                {
+                    <span> Exporting...</span>
+                }
+                else
+                {
+                    <span> Export as PDF</span>
+                }
+            </button>
+
+            <!-- ✅ Reset now styled like dashboard, not grey -->
+            <button class="btn btn-secondary" @onclick="ResetForm">Reset</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private DateTime startDate = DateTime.Today.AddMonths(-1);
+    private DateTime endDate = DateTime.Today;
+    private ExportStats? previewStats = null;
+    private string exportPath = "";
+    private string successMessage = "";
+    private string errorMessage = "";
+    private bool isExporting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdatePreview();
+    }
+
+    private async Task UpdatePreview()
+    {
+        try
+        {
+            // Validate dates
+            if (startDate > endDate)
+            {
+                var temp = startDate;
+                startDate = endDate;
+                endDate = temp;
+            }
+
+            previewStats = await ExportService.GetExportStatsAsync(startDate, endDate);
+            errorMessage = "";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load preview: {ex.Message}";
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ExportToPdf()
+    {
+        try
+        {
+            isExporting = true;
+            successMessage = "";
+            errorMessage = "";
+            StateHasChanged();
+
+            if (previewStats?.TotalEntries == 0)
+            {
+                errorMessage = "No entries to export in the selected date range.";
+                return;
+            }
+
+            exportPath = await ExportService.ExportToPdfAsync(startDate, endDate);
+            successMessage = "Export completed successfully!";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Export failed: {ex.Message}";
+            exportPath = "";
+        }
+        finally
+        {
+            isExporting = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SetLastWeek()
+    {
+        endDate = DateTime.Today;
+        startDate = DateTime.Today.AddDays(-7);
+        await UpdatePreview();
+    }
+
+    private async Task SetLastMonth()
+    {
+        endDate = DateTime.Today;
+        startDate = DateTime.Today.AddDays(-30);
+        await UpdatePreview();
+    }
+
+    private async Task SetThisMonth()
+    {
+        var now = DateTime.Today;
+        startDate = new DateTime(now.Year, now.Month, 1);
+        endDate = DateTime.Today;
+        await UpdatePreview();
+    }
+
+    private async Task SetLastThreeMonths()
+    {
+        endDate = DateTime.Today;
+        startDate = DateTime.Today.AddMonths(-3);
+        await UpdatePreview();
+    }
+
+    private async Task SetThisYear()
+    {
+        var now = DateTime.Today;
+        startDate = new DateTime(now.Year, 1, 1);
+        endDate = DateTime.Today;
+        await UpdatePreview();
+    }
+
+    private async Task SetAllTime()
+    {
+        var entries = await JournalService.GetEntryDatesAsync();
+        if (entries.Any())
+        {
+            startDate = entries.Min();
+            endDate = DateTime.Today;
+            await UpdatePreview();
+        }
+        else
+        {
+            errorMessage = "No entries found.";
+        }
+    }
+
+    private async Task ResetForm()
+    {
+        startDate = DateTime.Today.AddMonths(-1);
+        endDate = DateTime.Today;
+        exportPath = "";
+        successMessage = "";
+        errorMessage = "";
+        await UpdatePreview();
+    }
+}
