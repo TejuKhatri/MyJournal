@@ -12,18 +12,12 @@ namespace MyMauiApp.Services
             _databaseService = databaseService;
         }
 
-        /// <summary>
-        /// Gets all available moods
-        /// </summary>
         public async Task<List<Mood>> GetAllMoodsAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
             return await db.Table<Mood>().ToListAsync();
         }
 
-        /// <summary>
-        /// Gets moods grouped by sentiment
-        /// </summary>
         public async Task<Dictionary<string, List<Mood>>> GetMoodsBySentimentAsync()
         {
             var moods = await GetAllMoodsAsync();
@@ -33,9 +27,6 @@ namespace MyMauiApp.Services
                 .ToDictionary(g => g.Key, g => g.ToList());
         }
 
-        /// <summary>
-        /// Gets a specific mood by ID
-        /// </summary>
         public async Task<Mood?> GetMoodByIdAsync(int id)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -44,9 +35,6 @@ namespace MyMauiApp.Services
                 .FirstOrDefaultAsync();
         }
 
-        /// <summary>
-        /// Gets moods by sentiment type
-        /// </summary>
         public async Task<List<Mood>> GetMoodsBySentimentTypeAsync(string sentiment)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -55,9 +43,6 @@ namespace MyMauiApp.Services
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Gets mood usage statistics for analytics
-        /// </summary>
         public async Task<Dictionary<string, int>> GetMoodUsageStatsAsync(
             DateTime? startDate = null,
             DateTime? endDate = null)
@@ -78,7 +63,6 @@ namespace MyMauiApp.Services
 
             var entries = await query.ToListAsync();
 
-            // Count mood occurrences
             var moodCounts = new Dictionary<int, int>();
 
             foreach (var entry in entries)
@@ -105,7 +89,7 @@ namespace MyMauiApp.Services
                 }
             }
 
-            // Convert mood IDs to names
+           
             var result = new Dictionary<string, int>();
             var allMoods = await GetAllMoodsAsync();
 
@@ -122,9 +106,6 @@ namespace MyMauiApp.Services
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
-        /// <summary>
-        /// Gets mood distribution by sentiment (Positive/Neutral/Negative)
-        /// </summary>
         public async Task<Dictionary<string, int>> GetMoodDistributionBySentimentAsync(
             DateTime? startDate = null,
             DateTime? endDate = null)
@@ -185,9 +166,7 @@ namespace MyMauiApp.Services
             return sentimentCounts;
         }
 
-        /// <summary>
-        /// Gets the most frequent mood
-        /// </summary>
+      
         public async Task<(string MoodName, int Count)?> GetMostFrequentMoodAsync(
             DateTime? startDate = null,
             DateTime? endDate = null)
@@ -201,9 +180,6 @@ namespace MyMauiApp.Services
             return (mostFrequent.Key, mostFrequent.Value);
         }
 
-        /// <summary>
-        /// Gets mood trend over time (for visualization)
-        /// </summary>
         public async Task<Dictionary<DateTime, Dictionary<string, int>>> GetMoodTrendAsync(
             DateTime startDate,
             DateTime endDate)

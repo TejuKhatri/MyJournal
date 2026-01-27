@@ -3,8 +3,48 @@
   "WorkspaceRootPath": "E:\\biduth\\MyMauiApp\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\services\\analyticsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\services\\analyticsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\services\\applockstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\services\\applockstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\services\\exportservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\services\\exportservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\services\\ipinservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\services\\ipinservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\services\\journalservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\services\\journalservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\services\\moodservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\services\\moodservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\services\\pinservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\services\\pinservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\services\\tagservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\services\\tagservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\mauiprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\mauiprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\components\\pages\\splash.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\components\\pages\\splash.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\components\\pages\\journaleditor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\components\\pages\\journaleditor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\components\\pages\\customtags.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -47,10 +87,6 @@
       "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\components\\pages\\dashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\components\\pages\\journaleditor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\components\\pages\\journaleditor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|e:\\biduth\\mymauiapp\\mymauiapp\\components\\pages\\journallist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{FBCF792F-164B-4A66-BE73-F6848C25A985}|MyMauiApp\\MyMauiApp.csproj|solutionrelative:mymauiapp\\components\\pages\\journallist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -83,19 +119,136 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "AnalyticsService.cs",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\AnalyticsService.cs",
+              "RelativeDocumentMoniker": "MyMauiApp\\Services\\AnalyticsService.cs",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\AnalyticsService.cs",
+              "RelativeToolTip": "MyMauiApp\\Services\\AnalyticsService.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAAAAsAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T07:26:36.577Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AppLockState.cs",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\AppLockState.cs",
+              "RelativeDocumentMoniker": "MyMauiApp\\Services\\AppLockState.cs",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\AppLockState.cs",
+              "RelativeToolTip": "MyMauiApp\\Services\\AppLockState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T07:26:32.265Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ExportService.cs",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\ExportService.cs",
+              "RelativeDocumentMoniker": "MyMauiApp\\Services\\ExportService.cs",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\ExportService.cs",
+              "RelativeToolTip": "MyMauiApp\\Services\\ExportService.cs",
+              "ViewState": "AgIAAAQBAAAAAAAAAAA6wP4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T07:24:37.126Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "IPinService.cs",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\IPinService.cs",
+              "RelativeDocumentMoniker": "MyMauiApp\\Services\\IPinService.cs",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\IPinService.cs",
+              "RelativeToolTip": "MyMauiApp\\Services\\IPinService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T07:24:31.839Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "JournalService.cs",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\JournalService.cs",
+              "RelativeDocumentMoniker": "MyMauiApp\\Services\\JournalService.cs",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\JournalService.cs",
+              "RelativeToolTip": "MyMauiApp\\Services\\JournalService.cs",
+              "ViewState": "AgIAAD4BAAAAAAAAAAAQwFABAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T07:20:45.28Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Moodservice.cs",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\Moodservice.cs",
+              "RelativeDocumentMoniker": "MyMauiApp\\Services\\Moodservice.cs",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\Moodservice.cs",
+              "RelativeToolTip": "MyMauiApp\\Services\\Moodservice.cs",
+              "ViewState": "AgIAAM8AAAAAAAAAAAAIwLUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T07:19:38.798Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PinService.cs",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\PinService.cs",
+              "RelativeDocumentMoniker": "MyMauiApp\\Services\\PinService.cs",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\PinService.cs",
+              "RelativeToolTip": "MyMauiApp\\Services\\PinService.cs",
+              "ViewState": "AgIAAG4AAAAAAAAAAAAUwH4AAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T07:19:16.1Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "TagService.cs",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\TagService.cs",
+              "RelativeDocumentMoniker": "MyMauiApp\\Services\\TagService.cs",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Services\\TagService.cs",
+              "RelativeToolTip": "MyMauiApp\\Services\\TagService.cs",
+              "ViewState": "AgIAAAsBAAAAAAAAAAAiwAgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T07:16:24.325Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MauiProgram.cs",
+              "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\MauiProgram.cs",
+              "RelativeDocumentMoniker": "MyMauiApp\\MauiProgram.cs",
+              "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\MauiProgram.cs",
+              "RelativeToolTip": "MyMauiApp\\MauiProgram.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T07:15:48.156Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "Splash.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\Splash.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Pages\\Splash.razor",
               "ToolTip": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\Splash.razor",
               "RelativeToolTip": "MyMauiApp\\Components\\Pages\\Splash.razor",
-              "ViewState": "AgIAAGABAAAAAAAAAAAAAGsBAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-01-26T16:51:32.658Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 10,
               "Title": "JournalEditor.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\JournalEditor.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Pages\\JournalEditor.razor",
@@ -103,11 +256,12 @@
               "RelativeToolTip": "MyMauiApp\\Components\\Pages\\JournalEditor.razor",
               "ViewState": "AgIAAD8EAAAAAAAAAAAAAEQEAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-01-26T15:07:20.136Z"
+              "WhenOpened": "2026-01-26T15:07:20.136Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 16,
               "Title": "Routes.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Routes.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Routes.razor",
@@ -119,7 +273,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 15,
               "Title": "_Imports.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\_Imports.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\_Imports.razor",
@@ -131,7 +285,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 11,
               "Title": "CustomTags.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\CustomTags.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Pages\\CustomTags.razor",
@@ -139,12 +293,11 @@
               "RelativeToolTip": "MyMauiApp\\Components\\Pages\\CustomTags.razor",
               "ViewState": "AgIAAPgAAAAAAAAAAAAAAPgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-01-26T15:06:42.951Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-26T15:06:42.951Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 17,
               "Title": "NavMenu.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Layout\\NavMenu.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Layout\\NavMenu.razor",
@@ -156,7 +309,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 12,
               "Title": "Calender.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\Calender.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Pages\\Calender.razor",
@@ -164,12 +317,11 @@
               "RelativeToolTip": "MyMauiApp\\Components\\Pages\\Calender.razor",
               "ViewState": "AgIAAFQCAAAAAAAAAAAAAGACAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-01-26T15:01:54.156Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-26T15:01:54.156Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 13,
               "Title": "index.html",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\wwwroot\\index.html",
               "RelativeDocumentMoniker": "MyMauiApp\\wwwroot\\index.html",
@@ -177,12 +329,11 @@
               "RelativeToolTip": "MyMauiApp\\wwwroot\\index.html",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAAA4AAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-01-26T16:02:16.981Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-26T16:02:16.981Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 14,
               "Title": "bootstrap.min.css",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
               "RelativeDocumentMoniker": "MyMauiApp\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
@@ -194,7 +345,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 23,
               "Title": "DatabaseService.cs",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Data\\DatabaseService.cs",
               "RelativeDocumentMoniker": "MyMauiApp\\Data\\DatabaseService.cs",
@@ -206,7 +357,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 22,
               "Title": "Settings.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\Settings.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Pages\\Settings.razor",
@@ -218,7 +369,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 19,
               "Title": "Export.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\Export.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Pages\\Export.razor",
@@ -230,7 +381,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 18,
               "Title": "MainLayout.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Layout\\MainLayout.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Layout\\MainLayout.razor",
@@ -242,7 +393,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 20,
               "Title": "Dashboard.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\Dashboard.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Pages\\Dashboard.razor",
@@ -254,7 +405,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 21,
               "Title": "JournalList.razor",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\Components\\Pages\\JournalList.razor",
               "RelativeDocumentMoniker": "MyMauiApp\\Components\\Pages\\JournalList.razor",
@@ -266,7 +417,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 24,
               "Title": ".gitignore",
               "DocumentMoniker": "E:\\biduth\\MyMauiApp\\MyMauiApp\\.gitignore",
               "RelativeDocumentMoniker": "MyMauiApp\\.gitignore",

@@ -27,7 +27,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AnalyticsService>();
         builder.Services.AddSingleton<ExportService>();
 
-        // ✅ Security services (PIN + lock state)
+        // PIN + lock state
         builder.Services.AddSingleton<AppLockState>();
         builder.Services.AddSingleton<IPinService, PinService>();
 

@@ -1,10 +1,7 @@
 ﻿using MyMauiApp.Data;
 using MyMauiApp.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace MyMauiApp.Services
 {
@@ -24,16 +21,13 @@ namespace MyMauiApp.Services
             _tagService = tagService;
         }
 
-        /// <summary>
-        /// Gets comprehensive analytics for a date range
-        /// </summary>
+      
         public async Task<AnalyticsResult> GetAnalyticsAsync(
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
             var db = await _databaseService.GetConnectionAsync();
 
-            // Default to all time if no dates provided
             if (!startDate.HasValue || !endDate.HasValue)
             {
                 var allEntries = await db.Table<JournalEntry>().ToListAsync();
@@ -80,9 +74,7 @@ namespace MyMauiApp.Services
             return result;
         }
 
-        /// <summary>
-        /// Calculates mood distribution and most frequent mood
-        /// </summary>
+        
         private async Task CalculateMoodAnalytics(
             AnalyticsResult result,
             DateTime startDate,
@@ -114,9 +106,6 @@ namespace MyMauiApp.Services
             }
         }
 
-        /// <summary>
-        /// Calculates current streak, longest streak, and missed days
-        /// </summary>
         private async Task CalculateStreakAnalytics(
             AnalyticsResult result,
             DateTime endDate)
@@ -136,13 +125,13 @@ namespace MyMauiApp.Services
 
             var entryDates = allEntries.Select(e => e.EntryDate.Date).ToHashSet();
 
-            // Calculate current streak (working backwards from endDate)
+            // Calculate current streak 
             result.CurrentStreak = CalculateStreakFromDate(entryDates, endDate.Date);
 
             // Calculate longest streak
             result.LongestStreak = CalculateLongestStreak(entryDates, allEntries);
 
-            // Calculate missed days (between first and last entry)
+            // Calculate missed days 
             var firstDate = allEntries.Min(e => e.EntryDate).Date;
             var lastDate = allEntries.Max(e => e.EntryDate).Date;
 
@@ -156,9 +145,6 @@ namespace MyMauiApp.Services
             }
         }
 
-        /// <summary>
-        /// Calculates streak from a specific date going backwards
-        /// </summary>
         private int CalculateStreakFromDate(HashSet<DateTime> entryDates, DateTime fromDate)
         {
             int streak = 0;
@@ -173,9 +159,6 @@ namespace MyMauiApp.Services
             return streak;
         }
 
-        /// <summary>
-        /// Calculates the longest consecutive streak
-        /// </summary>
         private int CalculateLongestStreak(
             HashSet<DateTime> entryDates,
             List<JournalEntry> allEntries)
@@ -203,9 +186,6 @@ namespace MyMauiApp.Services
             return longestStreak;
         }
 
-        /// <summary>
-        /// Calculates tag usage statistics
-        /// </summary>
         private async Task CalculateTagAnalytics(
             AnalyticsResult result,
             DateTime startDate,
@@ -217,10 +197,6 @@ namespace MyMauiApp.Services
             result.TagBreakdown = await _tagService
                 .GetTagBreakdownAsync(startDate, endDate);
         }
-
-        /// <summary>
-        /// Calculates word count trends over time
-        /// </summary>
         private void CalculateWordCountAnalytics(
             AnalyticsResult result,
             List<JournalEntry> entries)
@@ -240,18 +216,12 @@ namespace MyMauiApp.Services
                 );
         }
 
-        /// <summary>
-        /// Gets the start of the week (Monday) for a given date
-        /// </summary>
         private DateTime GetWeekStart(DateTime date)
         {
             int diff = (7 + (date.DayOfWeek - DayOfWeek.Monday)) % 7;
             return date.AddDays(-1 * diff).Date;
         }
 
-        /// <summary>
-        /// Gets streak statistics only
-        /// </summary>
         public async Task<(int CurrentStreak, int LongestStreak, List<DateTime> MissedDays)>
             GetStreakStatsAsync()
         {
@@ -286,9 +256,6 @@ namespace MyMauiApp.Services
             return (currentStreak, longestStreak, missedDays);
         }
 
-        /// <summary>
-        /// Gets mood trend data for chart visualization
-        /// </summary>
         public async Task<List<MoodTrendData>> GetMoodTrendDataAsync(
             DateTime startDate,
             DateTime endDate)
@@ -304,9 +271,6 @@ namespace MyMauiApp.Services
             }).OrderBy(t => t.Date).ToList();
         }
 
-        /// <summary>
-        /// Gets summary statistics
-        /// </summary>
         public async Task<SummaryStats> GetSummaryStatsAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -337,7 +301,6 @@ namespace MyMauiApp.Services
         }
     }
 
-    // Additional models for analytics
 
     public class MoodTrendData
     {

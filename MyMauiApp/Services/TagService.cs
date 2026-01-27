@@ -11,15 +11,10 @@ namespace MyMauiApp.Services
     public class TagService
     {
         private readonly DatabaseService _databaseService;
-
         public TagService(DatabaseService databaseService)
         {
             _databaseService = databaseService;
         }
-
-        /// <summary>
-        /// Gets all tags (predefined and custom)
-        /// </summary>
         public async Task<List<Tag>> GetAllTagsAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -27,10 +22,6 @@ namespace MyMauiApp.Services
                 .OrderBy(t => t.Name)
                 .ToListAsync();
         }
-
-        /// <summary>
-        /// Gets only predefined tags
-        /// </summary>
         public async Task<List<Tag>> GetPredefinedTagsAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -40,9 +31,6 @@ namespace MyMauiApp.Services
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Gets only custom user-created tags
-        /// </summary>
         public async Task<List<Tag>> GetCustomTagsAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -51,10 +39,6 @@ namespace MyMauiApp.Services
                 .OrderBy(t => t.Name)
                 .ToListAsync();
         }
-
-        /// <summary>
-        /// Creates a new custom tag
-        /// </summary>
         public async Task<Tag> CreateTagAsync(string tagName)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -79,10 +63,6 @@ namespace MyMauiApp.Services
             await db.InsertAsync(tag);
             return tag;
         }
-
-        /// <summary>
-        /// Adds tags to a journal entry
-        /// </summary>
         public async Task AddTagsToEntryAsync(int entryId, List<int> tagIds)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -103,8 +83,6 @@ namespace MyMauiApp.Services
                 };
 
                 await db.InsertAsync(entryTag);
-
-                // Increment usage count
                 var tag = await db.Table<Tag>()
                     .Where(t => t.Id == tagId)
                     .FirstOrDefaultAsync();
@@ -116,10 +94,6 @@ namespace MyMauiApp.Services
                 }
             }
         }
-
-        /// <summary>
-        /// Gets tags for a specific entry
-        /// </summary>
         public async Task<List<Tag>> GetTagsForEntryAsync(int entryId)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -143,10 +117,6 @@ namespace MyMauiApp.Services
 
             return tags.OrderBy(t => t.Name).ToList();
         }
-
-        /// <summary>
-        /// Gets most used tags
-        /// </summary>
         public async Task<Dictionary<string, int>> GetMostUsedTagsAsync(
             int topN = 10,
             DateTime? startDate = null,
@@ -172,19 +142,14 @@ namespace MyMauiApp.Services
 
             if (!entryIds.Any())
                 return new Dictionary<string, int>();
-
-            // Get all entry-tag relationships for these entries
             var allEntryTags = await db.Table<EntryTag>().ToListAsync();
             var relevantEntryTags = allEntryTags
                 .Where(et => entryIds.Contains(et.JournalEntryId))
                 .ToList();
-
-            // Count tag usage
             var tagCounts = relevantEntryTags
                 .GroupBy(et => et.TagId)
                 .ToDictionary(g => g.Key, g => g.Count());
 
-            // Get tag names
             var allTags = await GetAllTagsAsync();
             var result = new Dictionary<string, int>();
 
@@ -200,9 +165,6 @@ namespace MyMauiApp.Services
             return result;
         }
 
-        /// <summary>
-        /// Gets tag breakdown (percentage of entries per tag)
-        /// </summary>
         public async Task<Dictionary<string, double>> GetTagBreakdownAsync(
             DateTime? startDate = null,
             DateTime? endDate = null)
@@ -229,13 +191,12 @@ namespace MyMauiApp.Services
 
             var entryIds = entries.Select(e => e.Id).ToList();
 
-            // Get all entry-tag relationships
             var allEntryTags = await db.Table<EntryTag>().ToListAsync();
             var relevantEntryTags = allEntryTags
                 .Where(et => entryIds.Contains(et.JournalEntryId))
                 .ToList();
 
-            // Count unique entries per tag
+            
             var tagEntryCounts = relevantEntryTags
                 .GroupBy(et => et.TagId)
                 .ToDictionary(
@@ -243,7 +204,7 @@ namespace MyMauiApp.Services
                     g => g.Select(et => et.JournalEntryId).Distinct().Count()
                 );
 
-            // Calculate percentages
+
             var allTags = await GetAllTagsAsync();
             var result = new Dictionary<string, double>();
 
@@ -260,9 +221,6 @@ namespace MyMauiApp.Services
             return result;
         }
 
-        /// <summary>
-        /// Recalculates usage counts for all tags
-        /// </summary>
         public async Task RecalculateTagUsageCountsAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -277,9 +235,7 @@ namespace MyMauiApp.Services
             }
         }
 
-        /// <summary>
-        /// Deletes a custom tag (and removes from all entries)
-        /// </summary>
+       
         public async Task DeleteTagAsync(int tagId)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -307,9 +263,6 @@ namespace MyMauiApp.Services
             await db.DeleteAsync<Tag>(tagId);
         }
 
-        /// <summary>
-        /// Searches tags by name
-        /// </summary>
         public async Task<List<Tag>> SearchTagsAsync(string searchText)
         {
             if (string.IsNullOrWhiteSpace(searchText))

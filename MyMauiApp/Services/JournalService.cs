@@ -1,10 +1,7 @@
 ﻿using MyMauiApp.Data;
 using MyMauiApp.Models;
 using MyMauiApp.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -19,14 +16,11 @@ namespace MyMauiApp.Services
         _databaseService = databaseService;
     }
 
-    /// <summary>
-    /// Creates a new journal entry for a specific date
-    /// </summary>
     public async Task<JournalEntry> CreateEntryAsync(JournalEntry entry)
     {
         var db = await _databaseService.GetConnectionAsync();
 
-        // Normalize date to midnight for consistency
+        
         entry.EntryDate = entry.EntryDate.Date;
 
         // Check if entry already exists for this date
@@ -36,7 +30,7 @@ namespace MyMauiApp.Services
             throw new InvalidOperationException($"An entry already exists for {entry.EntryDate:yyyy-MM-dd}. Please update the existing entry.");
         }
 
-        // Set system timestamps
+       
         entry.CreatedAt = DateTime.Now;
         entry.UpdatedAt = DateTime.Now;
 
@@ -47,9 +41,6 @@ namespace MyMauiApp.Services
         return entry;
     }
 
-    /// <summary>
-    /// Updates an existing journal entry
-    /// </summary>
     public async Task<JournalEntry> UpdateEntryAsync(JournalEntry entry)
     {
         var db = await _databaseService.GetConnectionAsync();
@@ -63,18 +54,15 @@ namespace MyMauiApp.Services
             throw new KeyNotFoundException($"Entry with ID {entry.Id} not found.");
         }
 
-        // Update timestamp and word count
+
         entry.UpdatedAt = DateTime.Now;
         entry.WordCount = CalculateWordCount(entry.Content);
-        entry.CreatedAt = existing.CreatedAt; // Preserve original creation time
+        entry.CreatedAt = existing.CreatedAt; 
 
         await db.UpdateAsync(entry);
         return entry;
     }
 
-    /// <summary>
-    /// Deletes a journal entry by ID
-    /// </summary>
     public async Task DeleteEntryAsync(int entryId)
     {
         var db = await _databaseService.GetConnectionAsync();
@@ -92,9 +80,6 @@ namespace MyMauiApp.Services
         }
     }
 
-    /// <summary>
-    /// Gets entry by ID with all relationships loaded
-    /// </summary>
     public async Task<JournalEntryDto?> GetEntryByIdAsync(int id)
     {
         var db = await _databaseService.GetConnectionAsync();
@@ -109,9 +94,6 @@ namespace MyMauiApp.Services
         return await LoadEntryRelationshipsAsync(entry);
     }
 
-    /// <summary>
-    /// Gets entry for a specific date
-    /// </summary>
     public async Task<JournalEntryDto?> GetEntryByDateAsync(DateTime date)
     {
         var db = await _databaseService.GetConnectionAsync();
@@ -127,9 +109,6 @@ namespace MyMauiApp.Services
         return await LoadEntryRelationshipsAsync(entry);
     }
 
-    /// <summary>
-    /// Gets paginated entries with optional sorting
-    /// </summary>
     public async Task<(List<JournalEntryDto> Entries, int TotalCount)> GetEntriesPagedAsync(
         int pageNumber = 1,
         int pageSize = 10,
@@ -163,9 +142,6 @@ namespace MyMauiApp.Services
         return (dtos, totalCount);
     }
 
-    /// <summary>
-    /// Searches entries by title or content
-    /// </summary>
     public async Task<List<JournalEntryDto>> SearchEntriesAsync(string searchText)
     {
         if (string.IsNullOrWhiteSpace(searchText))
@@ -177,7 +153,6 @@ namespace MyMauiApp.Services
         var entries = await db.Table<JournalEntry>()
             .ToListAsync();
 
-        // Filter in memory for LIKE functionality
         var filtered = entries
             .Where(e => e.Title.ToLower().Contains(searchText) ||
                        e.Content.ToLower().Contains(searchText))
@@ -194,9 +169,6 @@ namespace MyMauiApp.Services
         return dtos;
     }
 
-    /// <summary>
-    /// Filters entries by multiple criteria
-    /// </summary>
     public async Task<List<JournalEntryDto>> FilterEntriesAsync(SearchFilterCriteria criteria)
     {
         var db = await _databaseService.GetConnectionAsync();
@@ -241,13 +213,12 @@ namespace MyMauiApp.Services
             ).ToList();
         }
 
-        // Load relationships and apply tag filter
         var dtos = new List<JournalEntryDto>();
         foreach (var entry in entries.OrderByDescending(e => e.EntryDate))
         {
             var dto = await LoadEntryRelationshipsAsync(entry);
 
-            // Apply tag filter if specified
+            // Apply tag filter 
             if (criteria.TagIds.Any())
             {
                 var entryTagIds = dto.Tags.Select(t => t.Id).ToList();
@@ -265,9 +236,6 @@ namespace MyMauiApp.Services
         return dtos;
     }
 
-    /// <summary>
-    /// Gets all entries within a date range
-    /// </summary>
     public async Task<List<JournalEntryDto>> GetEntriesByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         var db = await _databaseService.GetConnectionAsync();
@@ -290,9 +258,6 @@ namespace MyMauiApp.Services
         return dtos;
     }
 
-    /// <summary>
-    /// Gets dates that have entries (for calendar view)
-    /// </summary>
     public async Task<List<DateTime>> GetEntryDatesAsync()
     {
         var db = await _databaseService.GetConnectionAsync();
@@ -303,9 +268,6 @@ namespace MyMauiApp.Services
         return entries.Select(e => e.EntryDate.Date).Distinct().OrderBy(d => d).ToList();
     }
 
-    /// <summary>
-    /// Loads moods and tags for an entry
-    /// </summary>
     private async Task<JournalEntryDto> LoadEntryRelationshipsAsync(JournalEntry entry)
     {
         var db = await _databaseService.GetConnectionAsync();
@@ -361,9 +323,6 @@ namespace MyMauiApp.Services
         return dto;
     }
 
-    /// <summary>
-    /// Calculates word count from content (handles Markdown)
-    /// </summary>
     private int CalculateWordCount(string content)
     {
         if (string.IsNullOrWhiteSpace(content))

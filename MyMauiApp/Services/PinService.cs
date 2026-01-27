@@ -87,9 +87,7 @@ public class PinService : IPinService
         return Task.FromResult(n.ToString("D4"));
     }
 
-    // ----------------------------
-    // Helpers
-    // ----------------------------
+  
     private static bool IsValidPin(string pin)
         => pin.Length == 4 && pin.All(char.IsDigit);
 
@@ -104,10 +102,7 @@ public class PinService : IPinService
         return pbkdf2.GetBytes(HashSize);
     }
 
-    /// <summary>
-    /// SecureStorage can throw on some Windows setups (unpackaged).
-    /// This safely falls back to Preferences.
-    /// </summary>
+ 
     private static async Task<string?> SafeGetAsync(string key)
     {
         try
@@ -116,7 +111,7 @@ public class PinService : IPinService
         }
         catch
         {
-            // fallback
+           
             return Preferences.Default.Get<string?>(key, null);
         }
     }
@@ -129,7 +124,7 @@ public class PinService : IPinService
         }
         catch
         {
-            // fallback
+            
             Preferences.Default.Set(key, value);
         }
     }

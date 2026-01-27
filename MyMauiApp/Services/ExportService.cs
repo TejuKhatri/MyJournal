@@ -9,10 +9,6 @@ using QuestColors = QuestPDF.Helpers.Colors;
 
 namespace MyMauiApp.Services
 {
-    /// <summary>
-    /// Handles exporting journal entries to PDF format
-    /// Uses QuestPDF library for PDF generation
-    /// </summary>
     public class ExportService
     {
         private readonly DatabaseService _databaseService;
@@ -26,18 +22,15 @@ namespace MyMauiApp.Services
             _journalService = journalService;
         }
 
-        /// <summary>
-        /// Exports journal entries within a date range to PDF
-        /// </summary>
         public async Task<string> ExportToPdfAsync(
             DateTime startDate,
             DateTime endDate,
             string? outputPath = null)
         {
-            // Set QuestPDF license
+
             QuestPDF.Settings.License = LicenseType.Community;
 
-            // Get entries in date range
+
             var entries = await _journalService
                 .GetEntriesByDateRangeAsync(startDate, endDate);
 
@@ -46,7 +39,6 @@ namespace MyMauiApp.Services
                 throw new InvalidOperationException("No entries found in the specified date range.");
             }
 
-            // Generate output path if not provided
             if (string.IsNullOrEmpty(outputPath))
             {
                 var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -81,9 +73,7 @@ namespace MyMauiApp.Services
             return outputPath;
         }
 
-        /// <summary>
-        /// Composes the PDF header
-        /// </summary>
+   
         private void ComposeHeader(QuestContainer container)
         {
             container.Row(row =>
@@ -96,9 +86,6 @@ namespace MyMauiApp.Services
             });
         }
 
-        /// <summary>
-        /// Composes the PDF content with all entries
-        /// </summary>
         private void ComposeContent(
             QuestContainer container,
             List<JournalEntryDto> entries,
@@ -109,7 +96,7 @@ namespace MyMauiApp.Services
             {
                 column.Spacing(10);
 
-                // Summary section
+              
                 column.Item().Text($"Journal Entries: {startDate:MMMM dd, yyyy} - {endDate:MMMM dd, yyyy}")
                     .FontSize(14).Bold();
 
@@ -127,19 +114,12 @@ namespace MyMauiApp.Services
             });
         }
 
-        /// <summary>
-        /// Composes a single entry in the PDF
-        /// </summary>
-        /// <summary>
-        /// Composes a single entry in the PDF
-        /// </summary>
         private void ComposeEntry(QuestContainer container, JournalEntryDto entry)
         {
             container.Column(column =>
             {
                 column.Spacing(5);
 
-                // Date and Title
                 column.Item().Row(row =>
                 {
                     row.RelativeItem().Text(entry.EntryDate.ToString("dddd, MMMM dd, yyyy"))
@@ -187,10 +167,9 @@ namespace MyMauiApp.Services
                 column.Item().PaddingTop(5).Text(FormatContentForPdf(entry.Content))
                     .FontSize(10).LineHeight(1.4f);
 
-                // Metadata - THIS IS THE CORRECTED SECTION
                 column.Item().PaddingTop(5).Text(text =>
                 {
-                    // Styles are applied to the 'text' descriptor inside the lambda
+                   
                     text.Span($"Word Count: {entry.WordCount} | ").FontSize(8).FontColor(QuestColors.Grey.Medium);
                     text.Span($"Created: {entry.CreatedAt:MMM dd, yyyy h:mm tt}")
                         .FontSize(8).FontColor(QuestColors.Grey.Medium);
@@ -204,27 +183,20 @@ namespace MyMauiApp.Services
             });
         }
 
-        /// <summary>
-        /// Formats content for PDF (strips Markdown for basic rendering)
-        /// </summary>
+        
         private string FormatContentForPdf(string content)
         {
             if (string.IsNullOrWhiteSpace(content))
                 return string.Empty;
 
-            // Basic Markdown removal for PDF
-            // In production, you might want to use a Markdown parser
+           
             content = System.Text.RegularExpressions.Regex.Replace(content, @"^#+\s+", "", System.Text.RegularExpressions.RegexOptions.Multiline);
             content = content.Replace("**", "").Replace("__", "");
             content = content.Replace("*", "").Replace("_", "");
             content = System.Text.RegularExpressions.Regex.Replace(content, @"\[([^\]]+)\]\([^\)]+\)", "$1");
 
             return content;
-        }
-
-        /// <summary>
-        /// Exports a single entry to PDF
-        /// </summary>
+        }        
         public async Task<string> ExportSingleEntryToPdfAsync(int entryId, string? outputPath = null)
         {
             var entry = await _journalService.GetEntryByIdAsync(entryId);
@@ -266,9 +238,6 @@ namespace MyMauiApp.Services
             return outputPath;
         }
 
-        /// <summary>
-        /// Gets export statistics
-        /// </summary>
         public async Task<ExportStats> GetExportStatsAsync(DateTime startDate, DateTime endDate)
         {
             var entries = await _journalService.GetEntriesByDateRangeAsync(startDate, endDate);
@@ -284,9 +253,6 @@ namespace MyMauiApp.Services
         }
     }
 
-    /// <summary>
-    /// Export statistics model
-    /// </summary>
     public class ExportStats
     {
         public int TotalEntries { get; set; }
