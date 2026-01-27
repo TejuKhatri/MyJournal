@@ -1,6 +1,7 @@
 ﻿@page "/"
 @page "/splash"
 
+@implements IDisposable
 @using System.Linq
 @using MyMauiApp.Services
 
@@ -34,20 +35,39 @@
     }
 
     /* ===== BIG GREETING ON BACKGROUND (TOP AREA) ===== */
-    .bg-greeting {
+    .bg-greeting-wrap {
         position: absolute;
-        top: 8%;
+        top: 7%;
         left: 0;
         right: 0;
         text-align: center;
         pointer-events: none;
         z-index: 0;
+        padding: 0 16px;
+    }
+
+    .bg-greeting {
         font-size: clamp(56px, 7vw, 120px);
         font-weight: 1000;
         letter-spacing: 2px;
         line-height: 1.05;
         color: #ffffff;
         text-shadow: 0 0 12px rgba(255,255,255,.55), 0 24px 70px rgba(0,0,0,.7);
+    }
+
+    /* ✅ QUOTE UNDER GREETING */
+    .bg-quote {
+        margin-top: 10px;
+        font-size: clamp(14px, 1.6vw, 18px);
+        font-weight: 700;
+        font-style: italic;
+        color: rgba(255,255,255,.82);
+        text-shadow: 0 0 10px rgba(0,0,0,.55);
+        max-width: 980px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.35;
+        opacity: 0.98;
     }
 
     /* ===== GLASS CARD ===== */
@@ -139,14 +159,6 @@
         color: var(--text);
     }
 
-    .hint {
-        margin-top: 10px;
-        text-align: center;
-        font-size: 12px;
-        font-weight: 750;
-        color: rgba(255,255,255,.65);
-    }
-
     .msg {
         margin-top: 12px;
         padding: 10px 12px;
@@ -167,8 +179,11 @@
 
 <div class="splash-overlay">
 
-    <!-- ✅ Greeting ONLY on background -->
-    <div class="bg-greeting">@Greeting</div>
+    <!-- ✅ Greeting + Running Quotes on background -->
+    <div class="bg-greeting-wrap">
+        <div class="bg-greeting">@Greeting</div>
+        <div class="bg-quote">“@CurrentQuote”</div>
+    </div>
 
     <div class="card">
         @if (isChecking)
@@ -216,8 +231,6 @@
                 <button class="btn" @onclick="TryUnlock">Confirm</button>
                 <button class="btn btn-ghost" @onclick="Clear">Clear</button>
             </div>
-
-            
         }
 
         @if (!string.IsNullOrWhiteSpace(message))
@@ -236,9 +249,33 @@
 
     private string Greeting => GetGreeting();
 
+    // ✅ Quotes
+    private readonly string[] _quotes = new[]
+    {
+        "Discipline is choosing what you want most over what you want now. — Abraham Lincoln",
+        "We are what we repeatedly do. Excellence, then, is not an act, but a habit. — Aristotle",
+        "It always seems impossible until it’s done. — Nelson Mandela",
+        "Do not wait for the perfect moment. Take the moment and make it perfect. — Zoey Sayward",
+        "Small steps every day lead to big results. — Biduth",
+        "Your future is created by what you do today, not tomorrow. — Robert Kiyosaki",
+        "Courage doesn’t mean you don’t feel fear. It means you don’t let fear stop you. — Joyce Meyer ",
+        "If you get tired, learn to rest, not to quit. — Banksy",
+        "What you practice grows stronger. — Shauna Shapiro",
+        "Be so good they can’t ignore you. — Steve Martin"
+    };
+
+    private int _quoteIndex = 0;
+    private System.Threading.PeriodicTimer? _quoteTimer;
+    private CancellationTokenSource? _quoteCts;
+
+    private string CurrentQuote => _quotes[_quoteIndex];
+
     protected override async Task OnInitializedAsync()
     {
         LockState.Lock();
+
+        StartQuoteRotation(); // ✅ start rotating quotes immediately
+
         try
         {
             pinEnabled = await PinService.IsPinEnabledAsync();
@@ -247,6 +284,28 @@
         {
             isChecking = false;
         }
+    }
+
+    private void StartQuoteRotation()
+    {
+        _quoteCts?.Cancel();
+        _quoteCts?.Dispose();
+
+        _quoteCts = new CancellationTokenSource();
+        _quoteTimer = new System.Threading.PeriodicTimer(TimeSpan.FromSeconds(5));
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                while (await _quoteTimer.WaitForNextTickAsync(_quoteCts.Token))
+                {
+                    _quoteIndex = (_quoteIndex + 1) % _quotes.Length;
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+            catch (OperationCanceledException) { }
+        });
     }
 
     private async Task TryUnlock()
@@ -290,8 +349,19 @@
     private static string GetGreeting()
     {
         var h = DateTime.Now.Hour;
-        if (h < 12) return "Good Morning";
-        if (h < 17) return "Good Afternoon";
-        return "Good Evening";
+        if (h < 12) return "Good Morning ☀️";
+        if (h < 17) return "Good Afternoon 🌤️";
+        return "Good Evening 🌙";
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            _quoteCts?.Cancel();
+            _quoteTimer?.Dispose();
+            _quoteCts?.Dispose();
+        }
+        catch { }
     }
 }
