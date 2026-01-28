@@ -10,11 +10,474 @@
 @inject IPinService PinService
 @inject IJSRuntime JS
 
+
+
+<div class="settings-page">
+    <div class="settings-container">
+
+        <div class="page-header">
+            <div class="title-block">
+                <h1> Settings</h1>
+
+            </div>
+
+            <div class="header-actions">
+                <button class="btn btn-primary" @onclick="RecalculateStats"> Recalculate</button>
+                <button class="btn btn-danger" @onclick="ClearAllData"> Clear Data</button>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert success">
+
+                <div>@successMessage</div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert error">
+
+                <div>@errorMessage</div>
+            </div>
+        }
+
+        <div class="settings-grid">
+
+            <div style="display:flex; flex-direction:column; gap:14px;">
+
+                <!-- SECURITY PIN -->
+                <div class="settings-card">
+                    <div class="section-title">🔐 Security PIN</div>
+                    <div class="section-subtitle">
+                        Enable a 4-digit PIN to protect your app. You can change or disable anytime.
+                    </div>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                        <span class="tag-item" style="background: rgba(249,115,22,0.10); border-color: rgba(249,115,22,0.22);">
+                            Status: <strong>@(pinEnabled ? "ENABLED" : "DISABLED")</strong>
+                        </span>
+
+                        <button class="btn btn-primary" @onclick="GeneratePin"> Generate</button>
+                    </div>
+
+                    @if (!pinEnabled)
+                    {
+                        <div class="pin-row-2">
+                            <input class="pin-input"
+                                   placeholder="New PIN"
+                                   inputmode="numeric"
+                                   maxlength="4"
+                                   @bind="newPin"
+                                   @bind:event="oninput" />
+
+                            <input class="pin-input"
+                                   placeholder="Confirm"
+                                   inputmode="numeric"
+                                   maxlength="4"
+                                   @bind="confirmPin"
+                                   @bind:event="oninput" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="pin-row-3">
+                            <input class="pin-input"
+                                   placeholder="Current"
+                                   inputmode="numeric"
+                                   maxlength="4"
+                                   @bind="currentPin"
+                                   @bind:event="oninput" />
+
+                            <input class="pin-input"
+                                   placeholder="New"
+                                   inputmode="numeric"
+                                   maxlength="4"
+                                   @bind="newPin"
+                                   @bind:event="oninput" />
+
+                            <input class="pin-input"
+                                   placeholder="Confirm"
+                                   inputmode="numeric"
+                                   maxlength="4"
+                                   @bind="confirmPin"
+                                   @bind:event="oninput" />
+                        </div>
+                    }
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+                        <button class="btn btn-primary" @onclick="EnableOrChangePin">
+                            @(pinEnabled ? "Change PIN" : "Enable PIN")
+                        </button>
+
+                        <button class="btn btn-danger" @onclick="DisablePin" disabled="@(!pinEnabled)">
+                            Disable
+                        </button>
+                    </div>
+
+                    <div class="pin-hint">
+                        Tip: Confirm PIN must match New PIN.
+                    </div>
+                </div>
+
+                <!-- Appearance dark and light-->
+                <div class="settings-card">
+                    <div class="section-title"> Appearance</div>
+                    <div class="section-subtitle">Switch between Light and Dark themes.</div>
+
+                    <div class="theme-preview">
+                        <div class="theme-option @(currentTheme == "Light" ? "selected" : "")"
+                             @onclick='() => SetTheme("Light")'>
+                            <div class="theme-icon">☀️</div>
+                            <div>
+                                <p class="theme-name">Light</p>
+                            </div>
+                        </div>
+
+                        <div class="theme-option @(currentTheme == "Dark" ? "selected" : "")"
+                             @onclick='() => SetTheme("Dark")'>
+                            <div class="theme-icon">🌙</div>
+                            <div>
+                                <p class="theme-name">Dark</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- naya tags yeha ayara basxa-->
+                <div class="settings-card">
+                    <div class="section-title"> Tag Management</div>
+                    <div class="section-subtitle">Delete unused custom tags.</div>
+
+                    @if (customTags.Any())
+                    {
+                        <div class="custom-tags-list">
+                            @foreach (var tag in customTags)
+                            {
+                                <div class="tag-item">
+                                    <span>@tag.Name</span>
+                                    <button class="tag-delete"
+                                            @onclick="() => DeleteCustomTag(tag.Id)"
+                                            title="Delete tag">
+                                        ✕
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p style="color: var(--muted); margin: 0; font-size: 13px; font-weight: 750;">
+                            No custom tags created yet.
+                        </p>
+                    }
+                </div>
+
+                <!-- Database ko path rakhako-->
+                <div class="settings-card">
+                    <div class="section-title"> Database</div>
+                    <div class="section-subtitle">Your journal data is stored locally in SQLite.</div>
+
+                    <div style="font-size:12px; font-weight:900; color:var(--muted); text-transform:uppercase; letter-spacing:.2px;">
+                        Database File
+                    </div>
+                    <div class="database-path">@databasePath</div>
+                </div>
+
+            </div>
+
+            
+            <div style="display:flex; flex-direction:column; gap:14px;">
+
+                <div class="settings-card">
+                    <div class="section-title"> App Statistics</div>
+                    <div class="section-subtitle">Quick overview of your journal activity.</div>
+
+                    <div class="stats-grid">
+                        <div class="dash-stat">
+                            <h4>Total Entries</h4>
+                            <div class="value">@totalEntries</div>
+                            <div class="sub">saved entries</div>
+                        </div>
+
+                        <div class="dash-stat">
+                            <h4>Total Tags</h4>
+                            <div class="value">@totalTags</div>
+                            <div class="sub">created tags</div>
+                        </div>
+
+                        <div class="dash-stat">
+                            <h4>Total Words</h4>
+                            <div class="value">@totalWords</div>
+                            <div class="sub">written words</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="section-title"> About</div>
+                    <div class="about-box">
+                        <p><strong>Journal Book</strong></p>
+                        <p>Version 1.0.0</p>
+                        <p>Built with .NET MAUI Blazor Hybrid</p>
+                        <p>CS6004 - Application Development Coursework</p>
+                        <p>Informatics college Pokhara</p>
+                        <p>"Life unfolds in small moments – a blend of routine and surprises, where every day brings a new chance to grow, learn, and experience the world around us."</p>
+                        <p style="margin-top: 10px;">
+                            A personal journaling app with mood tracking, analytics, and export.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private string currentTheme = "Light";
+
+    private List<Tag> customTags = new();
+    private int totalEntries = 0;
+    private int totalTags = 0;
+    private int totalWords = 0;
+    private string databasePath = "";
+    private string successMessage = "";
+    private string errorMessage = "";
+
+    // PIN enable 
+    private bool pinEnabled;
+    private string currentPin = "";
+    private string newPin = "";
+    private string confirmPin = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettings();
+        await LoadStatistics();
+
+        pinEnabled = await PinService.IsPinEnabledAsync();
+
+       
+        currentTheme = await JS.InvokeAsync<string>("theme.apply");
+    }
+
+    private async Task LoadSettings()
+    {
+        try
+        {
+            customTags = await TagService.GetCustomTagsAsync();
+            databasePath = DatabaseService.GetDatabasePath();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load settings: {ex.Message}";
+        }
+    }
+
+    private async Task LoadStatistics()
+    {
+        try
+        {
+            var db = await DatabaseService.GetConnectionAsync();
+            totalEntries = await db.Table<JournalEntry>().CountAsync();
+            totalTags = await db.Table<Tag>().CountAsync();
+
+            var entries = await db.Table<JournalEntry>().ToListAsync();
+            totalWords = entries.Sum(e => e.WordCount);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load statistics: {ex.Message}";
+        }
+    }
+
+    private async Task SetTheme(string theme)
+    {
+        try
+        {
+            errorMessage = "";
+            currentTheme = theme;
+
+            // apply whole dar in my project
+            await JS.InvokeVoidAsync("theme.set", theme);
+
+            // theme optional rakhalo
+            if (Application.Current != null)
+                Application.Current.UserAppTheme = theme == "Dark" ? AppTheme.Dark : AppTheme.Light;
+
+            successMessage = $"Theme changed to {theme}";
+            _ = ClearSuccessLater();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to change theme: {ex.Message}";
+        }
+    }
+
+    private async Task ClearSuccessLater()
+    {
+        StateHasChanged();
+        await Task.Delay(2000);
+        successMessage = "";
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteCustomTag(int tagId)
+    {
+        try
+        {
+            await TagService.DeleteTagAsync(tagId);
+            customTags = await TagService.GetCustomTagsAsync();
+            successMessage = "Tag deleted successfully";
+            _ = ClearSuccessLater();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to delete tag: {ex.Message}";
+        }
+    }
+
+    private async Task RecalculateStats()
+    {
+        try
+        {
+            errorMessage = "";
+            successMessage = "Recalculating statistics...";
+            StateHasChanged();
+
+            await TagService.RecalculateTagUsageCountsAsync();
+            await LoadStatistics();
+
+            successMessage = "Statistics recalculated successfully";
+            _ = ClearSuccessLater();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to recalculate statistics: {ex.Message}";
+        }
+    }
+
+    private async Task ClearAllData()
+    {
+        try
+        {
+            successMessage = "Clearing all data...";
+            StateHasChanged();
+
+            await DatabaseService.ClearAllDataAsync();
+            await LoadStatistics();
+
+            successMessage = "All journal entries have been cleared";
+            _ = ClearSuccessLater();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to clear data: {ex.Message}";
+        }
+    }
+
+
+    private async Task GeneratePin()
+    {
+        try
+        {
+            errorMessage = "";
+            successMessage = "";
+            newPin = await PinService.GeneratePinAsync();
+            confirmPin = newPin;
+            successMessage = "PIN generated. Click Enable/Change to save it.";
+            _ = ClearSuccessLater();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to generate PIN: {ex.Message}";
+        }
+    }
+
+    private async Task EnableOrChangePin()
+    {
+        try
+        {
+            errorMessage = "";
+            successMessage = "";
+
+            if (!IsValidPin(newPin))
+            {
+                errorMessage = "New PIN must be exactly 4 digits.";
+                return;
+            }
+
+            if (newPin != confirmPin)
+            {
+                errorMessage = "Confirm PIN must match New PIN.";
+                return;
+            }
+
+            if (!pinEnabled)
+            {
+                await PinService.EnablePinAsync(newPin);
+                pinEnabled = true;
+                successMessage = "PIN enabled successfully.";
+            }
+            else
+            {
+                if (!IsValidPin(currentPin))
+                {
+                    errorMessage = "Enter your current 4-digit PIN to change it.";
+                    return;
+                }
+
+                await PinService.ChangePinAsync(currentPin, newPin);
+                successMessage = "PIN changed successfully.";
+            }
+
+            currentPin = "";
+            newPin = "";
+            confirmPin = "";
+            _ = ClearSuccessLater();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task DisablePin()
+    {
+        try
+        {
+            errorMessage = "";
+            successMessage = "";
+
+            if (!IsValidPin(currentPin))
+            {
+                errorMessage = "Enter your current 4-digit PIN to disable.";
+                return;
+            }
+
+            await PinService.DisablePinAsync(currentPin);
+            pinEnabled = false;
+
+            successMessage = "PIN disabled successfully.";
+            currentPin = "";
+            newPin = "";
+            confirmPin = "";
+            _ = ClearSuccessLater();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private static bool IsValidPin(string pin)
+        => !string.IsNullOrWhiteSpace(pin) && pin.Length == 4 && pin.All(char.IsDigit);
+}
 <style>
-    /* IMPORTANT:
-               We DO NOT define :root here anymore.
-               Theme variables come from index.html (global) and switch via html.theme-dark.
-            */
+    
 
     .settings-page {
         min-height: 100vh;
@@ -104,7 +567,6 @@
         transform: none;
     }
 
-    /* Alerts */
     .alert {
         border-radius: var(--radius);
         padding: 12px 14px;
@@ -135,14 +597,12 @@
             font-size: 18px;
         }
 
-    /* Layout */
     .settings-grid {
         display: grid;
         grid-template-columns: 1.35fr .65fr;
         gap: 14px;
     }
 
-    /* Cards */
     .settings-card {
         background: var(--card);
         border: 1px solid var(--border);
@@ -170,7 +630,7 @@
         line-height: 1.6;
     }
 
-    /* Theme */
+
     .theme-preview {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -345,7 +805,7 @@
             font-weight: 950;
         }
 
-    /* PIN (smaller inputs + confirm) */
+
     .pin-row-2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -381,471 +841,3 @@
         font-weight: 800;
     }
 </style>
-
-<div class="settings-page">
-    <div class="settings-container">
-
-        <div class="page-header">
-            <div class="title-block">
-                <h1> Settings</h1>
-
-            </div>
-
-            <div class="header-actions">
-                <button class="btn btn-primary" @onclick="RecalculateStats"> Recalculate</button>
-                <button class="btn btn-danger" @onclick="ClearAllData"> Clear Data</button>
-            </div>
-        </div>
-
-        @if (!string.IsNullOrEmpty(successMessage))
-        {
-            <div class="alert success">
-
-                <div>@successMessage</div>
-            </div>
-        }
-
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert error">
-
-                <div>@errorMessage</div>
-            </div>
-        }
-
-        <div class="settings-grid">
-
-            <!-- LEFT -->
-            <div style="display:flex; flex-direction:column; gap:14px;">
-
-                <!-- SECURITY PIN -->
-                <div class="settings-card">
-                    <div class="section-title">🔐 Security PIN</div>
-                    <div class="section-subtitle">
-                        Enable a 4-digit PIN to protect your app. You can change or disable anytime.
-                    </div>
-
-                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                        <span class="tag-item" style="background: rgba(249,115,22,0.10); border-color: rgba(249,115,22,0.22);">
-                            Status: <strong>@(pinEnabled ? "ENABLED" : "DISABLED")</strong>
-                        </span>
-
-                        <button class="btn btn-primary" @onclick="GeneratePin"> Generate</button>
-                    </div>
-
-                    @if (!pinEnabled)
-                    {
-                        <div class="pin-row-2">
-                            <input class="pin-input"
-                                   placeholder="New PIN"
-                                   inputmode="numeric"
-                                   maxlength="4"
-                                   @bind="newPin"
-                                   @bind:event="oninput" />
-
-                            <input class="pin-input"
-                                   placeholder="Confirm"
-                                   inputmode="numeric"
-                                   maxlength="4"
-                                   @bind="confirmPin"
-                                   @bind:event="oninput" />
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="pin-row-3">
-                            <input class="pin-input"
-                                   placeholder="Current"
-                                   inputmode="numeric"
-                                   maxlength="4"
-                                   @bind="currentPin"
-                                   @bind:event="oninput" />
-
-                            <input class="pin-input"
-                                   placeholder="New"
-                                   inputmode="numeric"
-                                   maxlength="4"
-                                   @bind="newPin"
-                                   @bind:event="oninput" />
-
-                            <input class="pin-input"
-                                   placeholder="Confirm"
-                                   inputmode="numeric"
-                                   maxlength="4"
-                                   @bind="confirmPin"
-                                   @bind:event="oninput" />
-                        </div>
-                    }
-
-                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-                        <button class="btn btn-primary" @onclick="EnableOrChangePin">
-                            @(pinEnabled ? "Change PIN" : "Enable PIN")
-                        </button>
-
-                        <button class="btn btn-danger" @onclick="DisablePin" disabled="@(!pinEnabled)">
-                            Disable
-                        </button>
-                    </div>
-
-                    <div class="pin-hint">
-                        Tip: Confirm PIN must match New PIN.
-                    </div>
-                </div>
-
-                <!-- Appearance -->
-                <div class="settings-card">
-                    <div class="section-title"> Appearance</div>
-                    <div class="section-subtitle">Switch between Light and Dark themes.</div>
-
-                    <div class="theme-preview">
-                        <div class="theme-option @(currentTheme == "Light" ? "selected" : "")"
-                             @onclick='() => SetTheme("Light")'>
-                            <div class="theme-icon">☀️</div>
-                            <div>
-                                <p class="theme-name">Light</p>
-                            </div>
-                        </div>
-
-                        <div class="theme-option @(currentTheme == "Dark" ? "selected" : "")"
-                             @onclick='() => SetTheme("Dark")'>
-                            <div class="theme-icon">🌙</div>
-                            <div>
-                                <p class="theme-name">Dark</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tag Management -->
-                <div class="settings-card">
-                    <div class="section-title"> Tag Management</div>
-                    <div class="section-subtitle">Delete unused custom tags.</div>
-
-                    @if (customTags.Any())
-                    {
-                        <div class="custom-tags-list">
-                            @foreach (var tag in customTags)
-                            {
-                                <div class="tag-item">
-                                    <span>@tag.Name</span>
-                                    <button class="tag-delete"
-                                            @onclick="() => DeleteCustomTag(tag.Id)"
-                                            title="Delete tag">
-                                        ✕
-                                    </button>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <p style="color: var(--muted); margin: 0; font-size: 13px; font-weight: 750;">
-                            No custom tags created yet.
-                        </p>
-                    }
-                </div>
-
-                <!-- Database -->
-                <div class="settings-card">
-                    <div class="section-title"> Database</div>
-                    <div class="section-subtitle">Your journal data is stored locally in SQLite.</div>
-
-                    <div style="font-size:12px; font-weight:900; color:var(--muted); text-transform:uppercase; letter-spacing:.2px;">
-                        Database File
-                    </div>
-                    <div class="database-path">@databasePath</div>
-                </div>
-
-            </div>
-
-            <!-- RIGHT -->
-            <div style="display:flex; flex-direction:column; gap:14px;">
-
-                <div class="settings-card">
-                    <div class="section-title"> App Statistics</div>
-                    <div class="section-subtitle">Quick overview of your journal activity.</div>
-
-                    <div class="stats-grid">
-                        <div class="dash-stat">
-                            <h4>Total Entries</h4>
-                            <div class="value">@totalEntries</div>
-                            <div class="sub">saved entries</div>
-                        </div>
-
-                        <div class="dash-stat">
-                            <h4>Total Tags</h4>
-                            <div class="value">@totalTags</div>
-                            <div class="sub">created tags</div>
-                        </div>
-
-                        <div class="dash-stat">
-                            <h4>Total Words</h4>
-                            <div class="value">@totalWords</div>
-                            <div class="sub">written words</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="settings-card">
-                    <div class="section-title"> About</div>
-                    <div class="about-box">
-                        <p><strong>Journal Book</strong></p>
-                        <p>Version 1.0.0</p>
-                        <p>Built with .NET MAUI Blazor Hybrid</p>
-                        <p>CS6004 - Application Development Coursework</p>
-                        <p>Informatics college Pokhara</p>
-                        <p>"Life unfolds in small moments – a blend of routine and surprises, where every day brings a new chance to grow, learn, and experience the world around us."</p>
-                        <p style="margin-top: 10px;">
-                            A personal journaling app with mood tracking, analytics, and export.
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-</div>
-
-@code {
-    private string currentTheme = "Light";
-
-    private List<Tag> customTags = new();
-    private int totalEntries = 0;
-    private int totalTags = 0;
-    private int totalWords = 0;
-    private string databasePath = "";
-    private string successMessage = "";
-    private string errorMessage = "";
-
-    // PIN state
-    private bool pinEnabled;
-    private string currentPin = "";
-    private string newPin = "";
-    private string confirmPin = "";
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadSettings();
-        await LoadStatistics();
-
-        pinEnabled = await PinService.IsPinEnabledAsync();
-
-        // ✅ Apply saved theme for whole app and read it back
-        currentTheme = await JS.InvokeAsync<string>("theme.apply");
-    }
-
-    private async Task LoadSettings()
-    {
-        try
-        {
-            customTags = await TagService.GetCustomTagsAsync();
-            databasePath = DatabaseService.GetDatabasePath();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Failed to load settings: {ex.Message}";
-        }
-    }
-
-    private async Task LoadStatistics()
-    {
-        try
-        {
-            var db = await DatabaseService.GetConnectionAsync();
-            totalEntries = await db.Table<JournalEntry>().CountAsync();
-            totalTags = await db.Table<Tag>().CountAsync();
-
-            var entries = await db.Table<JournalEntry>().ToListAsync();
-            totalWords = entries.Sum(e => e.WordCount);
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Failed to load statistics: {ex.Message}";
-        }
-    }
-
-    private async Task SetTheme(string theme)
-    {
-        try
-        {
-            errorMessage = "";
-            currentTheme = theme;
-
-            // ✅ Apply to whole app (index.html adds html.theme-dark)
-            await JS.InvokeVoidAsync("theme.set", theme);
-
-            // Optional: also set MAUI theme (not required for CSS vars)
-            if (Application.Current != null)
-                Application.Current.UserAppTheme = theme == "Dark" ? AppTheme.Dark : AppTheme.Light;
-
-            successMessage = $"Theme changed to {theme}";
-            _ = ClearSuccessLater();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Failed to change theme: {ex.Message}";
-        }
-    }
-
-    private async Task ClearSuccessLater()
-    {
-        StateHasChanged();
-        await Task.Delay(2000);
-        successMessage = "";
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task DeleteCustomTag(int tagId)
-    {
-        try
-        {
-            await TagService.DeleteTagAsync(tagId);
-            customTags = await TagService.GetCustomTagsAsync();
-            successMessage = "Tag deleted successfully";
-            _ = ClearSuccessLater();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Failed to delete tag: {ex.Message}";
-        }
-    }
-
-    private async Task RecalculateStats()
-    {
-        try
-        {
-            errorMessage = "";
-            successMessage = "Recalculating statistics...";
-            StateHasChanged();
-
-            await TagService.RecalculateTagUsageCountsAsync();
-            await LoadStatistics();
-
-            successMessage = "Statistics recalculated successfully";
-            _ = ClearSuccessLater();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Failed to recalculate statistics: {ex.Message}";
-        }
-    }
-
-    private async Task ClearAllData()
-    {
-        try
-        {
-            successMessage = "Clearing all data...";
-            StateHasChanged();
-
-            await DatabaseService.ClearAllDataAsync();
-            await LoadStatistics();
-
-            successMessage = "All journal entries have been cleared";
-            _ = ClearSuccessLater();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Failed to clear data: {ex.Message}";
-        }
-    }
-
-    // ==========================
-    // ✅ PIN: enable/change/disable/generate (with confirm)
-    // ==========================
-    private async Task GeneratePin()
-    {
-        try
-        {
-            errorMessage = "";
-            successMessage = "";
-            newPin = await PinService.GeneratePinAsync();
-            confirmPin = newPin;
-            successMessage = "PIN generated. Click Enable/Change to save it.";
-            _ = ClearSuccessLater();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Failed to generate PIN: {ex.Message}";
-        }
-    }
-
-    private async Task EnableOrChangePin()
-    {
-        try
-        {
-            errorMessage = "";
-            successMessage = "";
-
-            if (!IsValidPin(newPin))
-            {
-                errorMessage = "New PIN must be exactly 4 digits.";
-                return;
-            }
-
-            if (newPin != confirmPin)
-            {
-                errorMessage = "Confirm PIN must match New PIN.";
-                return;
-            }
-
-            if (!pinEnabled)
-            {
-                await PinService.EnablePinAsync(newPin);
-                pinEnabled = true;
-                successMessage = "PIN enabled successfully.";
-            }
-            else
-            {
-                if (!IsValidPin(currentPin))
-                {
-                    errorMessage = "Enter your current 4-digit PIN to change it.";
-                    return;
-                }
-
-                await PinService.ChangePinAsync(currentPin, newPin);
-                successMessage = "PIN changed successfully.";
-            }
-
-            currentPin = "";
-            newPin = "";
-            confirmPin = "";
-            _ = ClearSuccessLater();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-        }
-    }
-
-    private async Task DisablePin()
-    {
-        try
-        {
-            errorMessage = "";
-            successMessage = "";
-
-            if (!IsValidPin(currentPin))
-            {
-                errorMessage = "Enter your current 4-digit PIN to disable.";
-                return;
-            }
-
-            await PinService.DisablePinAsync(currentPin);
-            pinEnabled = false;
-
-            successMessage = "PIN disabled successfully.";
-            currentPin = "";
-            newPin = "";
-            confirmPin = "";
-            _ = ClearSuccessLater();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-        }
-    }
-
-    private static bool IsValidPin(string pin)
-        => !string.IsNullOrWhiteSpace(pin) && pin.Length == 4 && pin.All(char.IsDigit);
-}

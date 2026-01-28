@@ -16,14 +16,8 @@ namespace MyMauiApp.Models
         [MaxLength(50), Unique]
         public string Name { get; set; } = string.Empty;
 
-        /// <summary>
-        /// True if predefined, false if custom user tag
-        /// </summary>
         public bool IsPredefined { get; set; }
 
-        /// <summary>
-        /// Usage count for analytics
-        /// </summary>
         public int UsageCount { get; set; }
     }
 }

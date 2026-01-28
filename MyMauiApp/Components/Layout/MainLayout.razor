@@ -1,98 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
 
-<style>
-    .app-shell {
-        display: grid;
-        grid-template-columns: 240px 1fr;
-        min-height: 100vh;
-        background: var(--bg);
-        color: var(--text);
-    }
-
-    .app-sidebar {
-        width: 240px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-        overflow: hidden;
-        border-right: 1px solid var(--border);
-        background: var(--nav-bg);
-        box-shadow: var(--shadow);
-    }
-
-    .app-main {
-        min-height: 100vh;
-        overflow: auto;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-    }
-
-    .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 998;
-        background: var(--card);
-        border-bottom: 1px solid var(--border);
-        box-shadow: var(--shadow);
-    }
-
-    .topbar-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 50px 66px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-    }
-
-    .top-welcome {
-        font-size: 44px;
-        font-weight: 1500;
-        color: var(--text);
-        font-family: "Georgia", "Times New Roman", cursive;
-        white-space: nowrap;
-        line-height: 1.1;
-    }
-
-    .top-right {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
-
-    .top-date {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        white-space: nowrap;
-    }
-
-    .logout-btn {
-        background: transparent;
-        border: 1px solid var(--border);
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        color: var(--text);
-        transition: all 0.2s ease;
-    }
-
-        .logout-btn:hover {
-            background: var(--bg);
-        }
-
-    .app-content {
-        padding: 16px;
-        max-width: 1200px;
-        margin: 0 auto;
-        width: 100%;
-    }
-</style>
 
 <div class="app-shell">
 
@@ -142,3 +50,98 @@
         Navigation.NavigateTo("/splash", forceLoad: true);
     }
 }
+   
+                        <style>
+.app-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.app-sidebar {
+    width: 240px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+    background: var(--nav-bg);
+    box-shadow: var(--shadow);
+}
+
+.app-main {
+    min-height: 100vh;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 998;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 10px 30px;  /* Reduced padding for smaller height */
+}
+
+.topbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 30px; /* Reduced padding for smaller height */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.top-welcome {
+    font-size: 18px; /* Reduced font size */
+    font-weight: 500;
+    color: #f97316; /* Orange color */
+    font-family: "Georgia", "Times New Roman", cursive;
+    white-space: nowrap;
+    line-height: 1.1;
+}
+
+.top-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.top-date {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.logout-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: var(--bg);
+}
+
+.app-content {
+    padding: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+</style>

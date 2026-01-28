@@ -14,7 +14,7 @@
 @if (!string.IsNullOrEmpty(successMessage))
 {
     <div class="success-message">
-        <div class="success-icon">✅</div>
+        <div class="success-icon"></div>
         <div class="success-content">
             <h3>Success!</h3>
             <p>@successMessage</p>
@@ -52,7 +52,7 @@
     {
         try
         {
-            tags = await TagService.GetCustomTagsAsync(); // Get custom tags only
+            tags = await TagService.GetCustomTagsAsync(); 
         }
         catch (Exception ex)
         {
@@ -70,7 +70,7 @@
 
         try
         {
-            var newTag = await TagService.CreateTagAsync(newTagName); // Create new tag using the service
+            var newTag = await TagService.CreateTagAsync(newTagName); 
             successMessage = $"Tag '{newTag.Name}' created successfully!";
             newTagName = "";
             await LoadTags();
@@ -83,24 +83,21 @@
 }
 
 <style>
-
-    /* Light and Dark Mode */
     :root {
-        --light-bg: #ffffff; /* White background in light mode */
+        --light-bg: #ffffff; 
         --dark-bg: #ffffff;
         --primary-color: #e0aaff;
-        --button-bg: #ff6f00; /* Orange button color */
-        --button-hover-bg: #e65c00; /* Darker orange */
+        --button-bg: #ff6f00; 
+        --button-hover-bg: #e65c00; 
         --error-bg: #f8d7da;
         --error-color: #721c24;
         --success-bg: #d4edda;
         --success-color: #155724;
     }
 
-    /* Default theme (Light mode) */
     body {
         background-color: var(--light-bg); /* White background */
-        color: #000; /* Black font in light mode */
+        color: #000; 
         font-family: 'Arial', sans-serif;
     }
 
@@ -186,7 +183,7 @@
         border: 1px solid #f5c6cb;
     }
 
-    /* Dark mode styles */
+   
     body.dark-mode {
         background-color: var(--dark-bg); /* Dark background */
         color: #fff; /* White font in dark mode */
@@ -226,7 +223,7 @@
 </style>
 
 <script>
-    // Toggle Dark Mode
+
     document.addEventListener('DOMContentLoaded', () => {
         const darkModeToggle = document.createElement('button');
         darkModeToggle.textContent = '🌙 Toggle Dark Mode';

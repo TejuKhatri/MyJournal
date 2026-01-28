@@ -8,7 +8,125 @@
 @inject AppLockState LockState
 @inject NavigationManager Navigation
 
-<style>
+
+@if (LockState.IsUnlocked)
+{
+    <div class="app-shell">
+
+        <!--  LEFT SIDEBAR -->
+        <div class="nav-shell">
+            <div class="nav-top">
+                <div class="brand">
+                    <div class="brand-title">FluentMind</div>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <NavLink class="nav-item" href="/dashboard" Match="NavLinkMatch.All">Dashboard</NavLink>
+                <NavLink class="nav-item" href="/calendar">Timeline</NavLink>
+                <NavLink class="nav-item" href="/editor">Write Entry</NavLink>
+                <NavLink class="nav-item" href="/customtags">Custom Tags</NavLink>
+                <NavLink class="nav-item" href="/list">All Entries</NavLink>
+                <NavLink class="nav-item" href="/export">Export</NavLink>
+                <NavLink class="nav-item" href="/settings">Settings</NavLink>
+            </div>
+
+            <div class="nav-bottom">
+                <div class="streak-card">
+                    <div>
+                        <div class="streak-num">@currentStreak</div>
+                        <div class="streak-label">day streak</div>
+                    </div>
+                    <div>🔥</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE (TOP BAR + BODY) -->
+        <div class="main-area">
+            <!-- IMPORTANT: this is just a wrapper.
+                 Your pages still render in MainLayout with @Body. -->
+            <div class="content-wrap"></div>
+        </div>
+    </div>
+}
+
+@code {
+    private int currentStreak;
+    private bool _loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        LockState.OnChange += OnLockChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+
+        if (LockState.IsUnlocked)
+            await LoadStreak();
+    }
+
+    private void OnLockChanged()
+    {
+        _ = InvokeAsync(async () =>
+        {
+            if (LockState.IsUnlocked)
+                await LoadStreak();
+            else
+                currentStreak = 0;
+
+            StateHasChanged();
+        });
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        if (!LockState.IsUnlocked) return;
+        _ = InvokeAsync(LoadStreak);
+    }
+
+    private async Task LoadStreak()
+    {
+        if (_loading) return;
+        _loading = true;
+
+        try
+        {
+            var db = await DatabaseService.GetConnectionAsync();
+
+            var dates = (await db.Table<JournalEntry>()
+                    .OrderBy(x => x.EntryDate)
+                    .ToListAsync())
+                .Select(x => x.EntryDate.Date)
+                .ToHashSet();
+
+            currentStreak = 0;
+            var d = DateTime.Today;
+
+            while (dates.Contains(d))
+            {
+                currentStreak++;
+                d = d.AddDays(-1);
+            }
+        }
+        catch
+        {
+            currentStreak = 0;
+        }
+        finally
+        {
+            _loading = false;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        LockState.OnChange -= OnLockChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}
+
+            <style>
     /* ===== SHELL (LEFT + RIGHT) ===== */
     .app-shell {
         display: flex;
@@ -207,120 +325,3 @@
         flex: 1;
     }
 </style>
-
-@if (LockState.IsUnlocked)
-{
-    <div class="app-shell">
-
-        <!-- ✅ LEFT SIDEBAR -->
-        <div class="nav-shell">
-            <div class="nav-top">
-                <div class="brand">
-                    <div class="brand-title">FluentMind</div>
-                </div>
-            </div>
-
-            <div class="nav-links">
-                <NavLink class="nav-item" href="/dashboard" Match="NavLinkMatch.All">Dashboard</NavLink>
-                <NavLink class="nav-item" href="/calendar">Timeline</NavLink>
-                <NavLink class="nav-item" href="/editor">Write Entry</NavLink>
-                <NavLink class="nav-item" href="/customtags">Custom Tags</NavLink>
-                <NavLink class="nav-item" href="/list">All Entries</NavLink>
-                <NavLink class="nav-item" href="/export">Export</NavLink>
-                <NavLink class="nav-item" href="/settings">Settings</NavLink>
-            </div>
-
-            <div class="nav-bottom">
-                <div class="streak-card">
-                    <div>
-                        <div class="streak-num">@currentStreak</div>
-                        <div class="streak-label">day streak</div>
-                    </div>
-                    <div>🔥</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ✅ RIGHT SIDE (TOP BAR + BODY) -->
-        <div class="main-area">
-            <!-- IMPORTANT: this is just a wrapper.
-                 Your pages still render in MainLayout with @Body. -->
-            <div class="content-wrap"></div>
-        </div>
-    </div>
-}
-
-@code {
-    private int currentStreak;
-    private bool _loading;
-
-    protected override async Task OnInitializedAsync()
-    {
-        LockState.OnChange += OnLockChanged;
-        Navigation.LocationChanged += OnLocationChanged;
-
-        if (LockState.IsUnlocked)
-            await LoadStreak();
-    }
-
-    private void OnLockChanged()
-    {
-        _ = InvokeAsync(async () =>
-        {
-            if (LockState.IsUnlocked)
-                await LoadStreak();
-            else
-                currentStreak = 0;
-
-            StateHasChanged();
-        });
-    }
-
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        if (!LockState.IsUnlocked) return;
-        _ = InvokeAsync(LoadStreak);
-    }
-
-    private async Task LoadStreak()
-    {
-        if (_loading) return;
-        _loading = true;
-
-        try
-        {
-            var db = await DatabaseService.GetConnectionAsync();
-
-            var dates = (await db.Table<JournalEntry>()
-                    .OrderBy(x => x.EntryDate)
-                    .ToListAsync())
-                .Select(x => x.EntryDate.Date)
-                .ToHashSet();
-
-            currentStreak = 0;
-            var d = DateTime.Today;
-
-            while (dates.Contains(d))
-            {
-                currentStreak++;
-                d = d.AddDays(-1);
-            }
-        }
-        catch
-        {
-            currentStreak = 0;
-        }
-        finally
-        {
-            _loading = false;
-        }
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        LockState.OnChange -= OnLockChanged;
-        Navigation.LocationChanged -= OnLocationChanged;
-    }
-}

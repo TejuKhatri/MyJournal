@@ -21,7 +21,7 @@
 @code {
     private async Task GuardNavigation(NavigationContext context)
     {
-        // allow root or splash
+        
         if (string.IsNullOrWhiteSpace(context.Path) ||
             context.Path.Equals("splash", StringComparison.OrdinalIgnoreCase))
             return;
@@ -33,7 +33,7 @@
         // if not unlocked -> redirect to splash
         if (!LockState.IsUnlocked)
         {
-            await Task.Yield(); // avoid navigation exception
+            await Task.Yield(); 
             Nav.NavigateTo("/splash", replace: true);
         }
     }

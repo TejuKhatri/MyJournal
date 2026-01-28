@@ -1,10 +1,6 @@
 ﻿using MyMauiApp.Models;
 using SQLite;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MyMauiApp.Data
 {
@@ -61,7 +57,7 @@ namespace MyMauiApp.Data
 
         private async Task SeedInitialData()
         {
-            // ✅ MOODS: always insert missing moods (even if table already has some)
+            // MOODS: always insert missing moods
             var moodsToSeed = new List<Mood>
             {
                 // Positive
@@ -100,7 +96,7 @@ namespace MyMauiApp.Data
                 }
             }
 
-            // ✅ TAGS: only seed if empty (same as your old logic)
+            // Tags
             var existingTags = await _database.Table<Tag>().CountAsync();
             if (existingTags == 0)
             {
